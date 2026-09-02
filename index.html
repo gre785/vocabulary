@@ -136,6 +136,12 @@
             font-weight: bold;
             color: #2c3e50;
             font-size: 1em;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .word-col:hover {
+            color: #0066cc;
+            text-decoration: underline;
         }
         .desc-col {
             line-height: 1.4;
@@ -163,6 +169,146 @@
         }
         .remove-btn:hover { background-color: #c82333; }
 
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.2s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #000;
+        }
+
+        .modal-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-speak {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            flex: 1;
+        }
+
+        .btn-speak:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-speak:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .explanation-content {
+            line-height: 1.6;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .explanation-content h3 {
+            color: #007bff;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .explanation-content p {
+            margin: 8px 0;
+        }
+
+        .explanation-content ul, .explanation-content ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px 8px;
@@ -180,6 +326,10 @@
             }
             .word-col {
                 font-size: 0.95em;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
             }
         }
     </style>
@@ -210,6 +360,7 @@
         <ul>
         <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
         <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
+        <li><strong>Click on any word</strong> to get AI explanation with examples and hear pronunciation</li>
         <li>Save/Upload the list to sync words on different devices</li>
         </ul>
     </div>
@@ -232,6 +383,20 @@
         </table>
     </div>
 
+    <!-- Explanation Modal -->
+    <div id="explanationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalWord"></h2>
+                <span class="close-btn" onclick="closeExplanationModal()">&times;</span>
+            </div>
+            <div class="modal-controls">
+                <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊 Pronounce</button>
+            </div>
+            <div id="explanationBody"></div>
+        </div>
+    </div>
+
     <script>
         const VOCAB_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/vocabulary.csv';
         const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
@@ -241,6 +406,7 @@
         let remainingEntries = []; 
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
         let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
+        let currentWord = '';
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
@@ -391,6 +557,7 @@
                 const wordTd = document.createElement('td');
                 wordTd.className = 'word-col';
                 wordTd.textContent = entry.word;
+                wordTd.onclick = () => showExplanation(entry.word);
 
                 const descTd = document.createElement('td');
                 descTd.className = 'desc-col';
@@ -561,6 +728,137 @@
                 } else {
                     icon.textContent = "";
                 }
+            }
+        }
+
+        // Word explanation with AI
+        async function showExplanation(word) {
+            currentWord = word;
+            const modal = document.getElementById('explanationModal');
+            const explanationBody = document.getElementById('explanationBody');
+            
+            document.getElementById('modalWord').textContent = word.toUpperCase();
+            explanationBody.innerHTML = '<div class="loading"><div class="spinner"></div>Loading explanation...</div>';
+            
+            modal.style.display = 'block';
+            
+            try {
+                const explanation = await getAIExplanation(word);
+                explanationBody.innerHTML = `<div class="explanation-content">${explanation}</div>`;
+            } catch (error) {
+                explanationBody.innerHTML = `
+                    <div class="error-msg">Failed to load explanation. Please try again.</div>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+
+        async function getAIExplanation(word) {
+            const prompt = `Provide a concise explanation of the word "${word}" in English. Include:
+1. Definition
+2. Part of speech
+3. 2-3 example sentences
+4. Any synonyms or related words
+
+Format the response in clear sections with headers.`;
+
+            try {
+                // Use a simple fetch-based approach with a free API (OpenRouter or similar)
+                // Note: You should replace this with your preferred API
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getOpenAIKey()
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{
+                            role: 'user',
+                            content: prompt
+                        }],
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch explanation');
+                }
+
+                const data = await response.json();
+                const explanation = data.choices[0].message.content;
+                
+                return formatExplanation(explanation);
+            } catch (error) {
+                console.error('API Error:', error);
+                // Fallback to a simple local explanation
+                return getLocalExplanation(word);
+            }
+        }
+
+        function getOpenAIKey() {
+            // This should be set via environment variable or user input
+            // For now, returning empty - user needs to provide their API key
+            return localStorage.getItem('openai_api_key') || '';
+        }
+
+        function getLocalExplanation(word) {
+            // Fallback explanation generator
+            return `
+                <h3>Word: ${word}</h3>
+                <p><strong>Note:</strong> To enable AI-powered explanations, please add your OpenAI API key:</p>
+                <input type="password" id="apiKeyInput" placeholder="Enter OpenAI API key" style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc;">
+                <button onclick="saveAPIKey()" style="background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Save API Key</button>
+                <p style="margin-top: 15px;">In the meantime, you can:</p>
+                <ul>
+                    <li>Look up the word in a dictionary</li>
+                    <li>Use the pronunciation button to hear how it sounds</li>
+                    <li>Provide an API key to enable AI explanations</li>
+                </ul>
+            `;
+        }
+
+        function saveAPIKey() {
+            const apiKey = document.getElementById('apiKeyInput')?.value;
+            if (apiKey) {
+                localStorage.setItem('openai_api_key', apiKey);
+                alert('API key saved! Please click on the word again to get the explanation.');
+            }
+        }
+
+        function formatExplanation(text) {
+            // Convert text to HTML format
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .split('**').join('');
+        }
+
+        function speakWord() {
+            if (!currentWord) return;
+            
+            const utterance = new SpeechSynthesisUtterance(currentWord);
+            utterance.rate = 0.8;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function closeExplanationModal() {
+            document.getElementById('explanationModal').style.display = 'none';
+            window.speechSynthesis.cancel();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('explanationModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                window.speechSynthesis.cancel();
             }
         }
     </script>
