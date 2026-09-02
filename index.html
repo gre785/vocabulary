@@ -8,13 +8,69 @@
         * {
             box-sizing: border-box;
         }
+
+        :root {
+            --bg-primary: #f9f9f9;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f2f5f8;
+            --text-primary: #333;
+            --text-secondary: #444;
+            --text-muted: #666;
+            --border-color: #ddd;
+            --header-bg: #007bff;
+            --header-hover: #0056b3;
+            --hover-bg: #e2e8f0;
+            --status-bg: #e3f2fd;
+            --status-border: #90caf9;
+            --status-text: #555;
+            --error-bg: #f8d7da;
+            --error-text: #721c24;
+            --table-shadow: rgba(0,0,0,0.1);
+            --modal-bg: #fefefe;
+            --modal-shadow: rgba(0, 0, 0, 0.1);
+            --close-color: #aaa;
+            --close-hover: #000;
+            --word-hover: #0066cc;
+            --rank-text: #666;
+            --title-text: #2c3e50;
+        }
+
+        html.dark-mode {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3a3a3a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #c0c0c0;
+            --text-muted: #a0a0a0;
+            --border-color: #444;
+            --header-bg: #0d47a1;
+            --header-hover: #1565c0;
+            --hover-bg: #4a4a4a;
+            --status-bg: #1a3a52;
+            --status-border: #2196f3;
+            --status-text: #b0c4de;
+            --error-bg: #3a2a2a;
+            --error-text: #ff9999;
+            --table-shadow: rgba(0,0,0,0.3);
+            --modal-bg: #2d2d2d;
+            --modal-shadow: rgba(0, 0, 0, 0.5);
+            --close-color: #999;
+            --close-hover: #e0e0e0;
+            --word-hover: #64b5f6;
+            --rank-text: #999;
+            --title-text: #e0e0e0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0 auto;
             max-width: 1000px;
             padding: 15px;
-            background-color: #f9f9f9;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
         }
+
         .header-bar {
             display: flex;
             flex-wrap: wrap;
@@ -23,20 +79,28 @@
             gap: 10px;
             margin-bottom: 12px;
         }
+
         .header-bar h2 {
             margin: 0;
             font-size: 1.5em;
+            color: var(--title-text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .description-box {
-            background-color: #ffffff;
-            border-left: 4px solid #007bff;
+            background-color: var(--bg-secondary);
+            border-left: 4px solid var(--header-bg);
             padding: 12px 15px;
             margin-bottom: 15px;
             border-radius: 0 4px 4px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px var(--table-shadow);
             font-size: 0.9em;
-            color: #444;
+            color: var(--text-secondary);
             line-height: 1.4;
         }
 
@@ -44,16 +108,18 @@
             padding: 10px;
             margin-bottom: 15px;
             font-weight: bold;
-            color: #555;
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
+            color: var(--status-text);
+            background: var(--status-bg);
+            border: 1px solid var(--status-border);
             border-radius: 4px;
         }
+
         .controls {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
+
         .btn {
             border: none;
             padding: 8px 12px;
@@ -64,98 +130,154 @@
             transition: background-color 0.2s;
             flex: 1 1 auto;
             text-align: center;
+            color: white;
         }
+
         .btn-upload {
             background-color: #17a2b8;
             color: white;
         }
         .btn-upload:hover { background-color: #138496; }
+
         .btn-download {
             background-color: #28a745;
             color: white;
         }
         .btn-download:hover { background-color: #218838; }
+
         .btn-reset {
             background-color: #6c757d;
             color: white;
         }
         .btn-reset:hover { background-color: #5a6268; }
+
         .btn-toggle {
             background-color: #fd7e14;
             color: white;
         }
         .btn-toggle:hover { background-color: #e96b00; }
+
+        .btn-dark-mode {
+            background-color: #555;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        .btn-dark-mode:hover { 
+            background-color: #333; 
+        }
+
+        html.dark-mode .btn-dark-mode {
+            background-color: #ffd700;
+            color: #000;
+        }
+
+        html.dark-mode .btn-dark-mode:hover {
+            background-color: #ffed4e;
+        }
         
         .table-container {
             width: 100%;
             overflow-x: auto;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: var(--bg-secondary);
+            box-shadow: 0 1px 3px var(--table-shadow);
             border-radius: 4px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             table-layout: auto;
         }
+
         th, td {
             padding: 10px 8px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: top;
             word-wrap: break-word;
+            color: var(--text-primary);
         }
+
         th {
-            background-color: #007bff;
+            background-color: var(--header-bg);
             color: white;
             font-weight: bold;
         }
+
         th.sortable {
             cursor: pointer;
             user-select: none;
             transition: background-color 0.2s;
         }
-        th.sortable:hover { background-color: #0056b3; }
+
+        th.sortable:hover { 
+            background-color: var(--header-hover); 
+        }
 
         tbody tr {
             touch-action: pan-y;
             transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s;
         }
-        tbody tr:nth-child(odd) { background-color: #ffffff; }
-        tbody tr:nth-child(even) { background-color: #f2f5f8; }
-        tbody tr:hover { background-color: #e2e8f0; }
+
+        tbody tr:nth-child(odd) { 
+            background-color: var(--bg-secondary); 
+        }
+
+        tbody tr:nth-child(even) { 
+            background-color: var(--bg-tertiary); 
+        }
+
+        tbody tr:hover { 
+            background-color: var(--hover-bg); 
+        }
 
         .rank-col {
             width: 50px;
             font-weight: bold;
-            color: #666;
+            color: var(--rank-text);
             text-align: center;
         }
+
         .word-col {
             min-width: 110px;
             font-weight: bold;
-            color: #2c3e50;
+            color: var(--title-text);
             font-size: 1em;
             cursor: pointer;
             transition: color 0.2s;
         }
+
         .word-col:hover {
-            color: #0066cc;
+            color: var(--word-hover);
             text-decoration: underline;
         }
+
         .desc-col {
             line-height: 1.4;
             font-size: 0.95em;
+            color: var(--text-secondary);
         }
+
         .action-col {
             width: 45px;
             text-align: center;
         }
-        th:first-child, th:last-child { text-align: center; }
+
+        th:first-child, th:last-child { 
+            text-align: center; 
+        }
+
         .sort-icon {
             font-size: 0.8em;
             margin-left: 3px;
         }
+
         .remove-btn {
             background-color: #dc3545;
             color: white;
@@ -167,7 +289,10 @@
             font-weight: bold;
             transition: background-color 0.2s;
         }
-        .remove-btn:hover { background-color: #c82333; }
+
+        .remove-btn:hover { 
+            background-color: #c82333; 
+        }
 
         /* Modal styles */
         .modal {
@@ -188,17 +313,18 @@
         }
 
         .modal-content {
-            background-color: #fefefe;
+            background-color: var(--modal-bg);
             margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             width: 90%;
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px var(--modal-shadow);
             animation: slideDown 0.3s;
+            color: var(--text-primary);
         }
 
         @keyframes slideDown {
@@ -211,17 +337,17 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid var(--header-bg);
             padding-bottom: 10px;
         }
 
         .modal-header h2 {
             margin: 0;
-            color: #2c3e50;
+            color: var(--title-text);
         }
 
         .close-btn {
-            color: #aaa;
+            color: var(--close-color);
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
@@ -229,7 +355,7 @@
         }
 
         .close-btn:hover {
-            color: #000;
+            color: var(--close-hover);
         }
 
         .modal-controls {
@@ -239,7 +365,7 @@
         }
 
         .btn-speak {
-            background-color: #007bff;
+            background-color: var(--header-bg);
             color: white;
             border: none;
             padding: 8px 15px;
@@ -251,7 +377,7 @@
         }
 
         .btn-speak:hover {
-            background-color: #0056b3;
+            background-color: var(--header-hover);
         }
 
         .btn-speak:disabled {
@@ -261,12 +387,12 @@
 
         .explanation-content {
             line-height: 1.6;
-            color: #333;
+            color: var(--text-secondary);
             font-size: 0.95em;
         }
 
         .explanation-content h3 {
-            color: #007bff;
+            color: var(--header-bg);
             margin-top: 15px;
             margin-bottom: 8px;
         }
@@ -283,12 +409,12 @@
         .loading {
             text-align: center;
             padding: 20px;
-            color: #666;
+            color: var(--text-muted);
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
+            border: 4px solid var(--bg-tertiary);
+            border-top: 4px solid var(--header-bg);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -302,11 +428,17 @@
         }
 
         .error-msg {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: var(--error-bg);
+            color: var(--error-text);
             padding: 12px;
             border-radius: 4px;
             margin-bottom: 10px;
+        }
+
+        input[type="password"], input[type="text"] {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         @media (max-width: 600px) {
@@ -316,6 +448,9 @@
             .header-bar {
                 flex-direction: column;
                 align-items: stretch;
+            }
+            .header-right {
+                width: 100%;
             }
             .controls {
                 width: 100%;
@@ -338,22 +473,26 @@
 
     <div class="header-bar">
         <h2>Top English Vocabulary</h2>
-        <div class="controls">
-            <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;" onchange="handleUploadRemovedCSV(event)">
-            
-            <button class="btn btn-upload" onclick="document.getElementById('uploadCsvInput').click()">
-                Upload
-            </button>
-            <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
-                Download (<span id="removedCount">0</span>)
-            </button>
-            <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
-                Show Top 3000
-            </button>
-            <button class="btn btn-reset" onclick="resetRemovedWords()">
-                Restore
-            </button>
+        <div class="header-right">
+            <button class="btn-dark-mode" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
         </div>
+    </div>
+
+    <div class="controls" style="margin-bottom: 12px;">
+        <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;" onchange="handleUploadRemovedCSV(event)">
+        
+        <button class="btn btn-upload" onclick="document.getElementById('uploadCsvInput').click()">
+            Upload
+        </button>
+        <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
+            Download (<span id="removedCount">0</span>)
+        </button>
+        <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
+            Show Top 3000
+        </button>
+        <button class="btn btn-reset" onclick="resetRemovedWords()">
+            Restore
+        </button>
     </div>
 
     <div class="description-box">
@@ -410,7 +549,31 @@
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
+        // Dark mode functions
+        function initializeDarkMode() {
+            const darkMode = JSON.parse(localStorage.getItem('vocab_dark_mode') || 'false');
+            if (darkMode) {
+                document.documentElement.classList.add('dark-mode');
+                updateDarkModeButton();
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark-mode');
+            const isDarkMode = document.documentElement.classList.contains('dark-mode');
+            localStorage.setItem('vocab_dark_mode', JSON.stringify(isDarkMode));
+            updateDarkModeButton();
+        }
+
+        function updateDarkModeButton() {
+            const btn = document.getElementById('darkModeToggle');
+            const isDarkMode = document.documentElement.classList.contains('dark-mode');
+            btn.textContent = isDarkMode ? '☀️' : '🌙';
+            btn.title = isDarkMode ? 'Toggle light mode' : 'Toggle dark mode';
+        }
+
         async function initializeData() {
+            initializeDarkMode();
             updateToggleButton();
             await loadRemovedCSV();
             await loadVocabularyCSV();
@@ -488,8 +651,8 @@
                     parseAndDisplayCSV(text);
                 } catch (remoteErr) {
                     statusDiv.innerText = 'Error loading dataset from both local storage and GitHub.';
-                    statusDiv.style.backgroundColor = '#f8d7da';
-                    statusDiv.style.color = '#721c24';
+                    statusDiv.style.backgroundColor = 'var(--error-bg)';
+                    statusDiv.style.color = 'var(--error-text)';
                 }
             }
         }
@@ -807,7 +970,7 @@ Format the response in clear sections with headers.`;
             return `
                 <h3>Word: ${word}</h3>
                 <p><strong>Note:</strong> To enable AI-powered explanations, please add your OpenAI API key:</p>
-                <input type="password" id="apiKeyInput" placeholder="Enter OpenAI API key" style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc;">
+                <input type="password" id="apiKeyInput" placeholder="Enter OpenAI API key" style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px;">
                 <button onclick="saveAPIKey()" style="background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Save API Key</button>
                 <p style="margin-top: 15px;">In the meantime, you can:</p>
                 <ul>
