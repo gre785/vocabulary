@@ -471,13 +471,6 @@
 </head>
 <body>
 
-    <div class="header-bar">
-        <h2>Top English Vocabulary</h2>
-        <div class="header-right">
-            <button class="btn-dark-mode" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
-        </div>
-    </div>
-
     <div class="controls" style="margin-bottom: 12px;">
         <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;" onchange="handleUploadRemovedCSV(event)">
         
@@ -551,8 +544,6 @@
 
         // Dark mode functions
         function initializeDarkMode() {
-            const darkMode = JSON.parse(localStorage.getItem('vocab_dark_mode') || 'false');
-            if (darkMode) {
                 document.documentElement.classList.add('dark-mode');
                 updateDarkModeButton();
             }
@@ -561,16 +552,10 @@
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark-mode');
             const isDarkMode = document.documentElement.classList.contains('dark-mode');
-            localStorage.setItem('vocab_dark_mode', JSON.stringify(isDarkMode));
+            localStorage.setItem('vocab_dark_mode', JSON.stringify(true));
             updateDarkModeButton();
         }
 
-        function updateDarkModeButton() {
-            const btn = document.getElementById('darkModeToggle');
-            const isDarkMode = document.documentElement.classList.contains('dark-mode');
-            btn.textContent = isDarkMode ? '☀️' : '🌙';
-            btn.title = isDarkMode ? 'Toggle light mode' : 'Toggle dark mode';
-        }
 
         async function initializeData() {
             initializeDarkMode();
