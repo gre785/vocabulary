@@ -81,9 +81,8 @@
         }
         th.sortable:hover { background-color: #0056b3; }
 
-        /* Swipeable row styling & animations */
         tbody tr {
-            touch-action: pan-y; /* Prevents vertical scrolling interference */
+            touch-action: pan-y;
             transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s;
         }
         tbody tr:nth-child(odd) { background-color: #ffffff; }
@@ -143,12 +142,12 @@
                 Download (<span id="removedCount">0</span>)
             </button>
             <button class="btn btn-reset" onclick="resetRemovedWords()">
-                Restore All
+                Restore
             </button>
         </div>
     </div>
 
-    <div id="status">Checking for local vocabulary.csv...</div>
+    <div id="status">Checking for local files...</div>
 
     <table id="vocabTable">
         <thead>
@@ -165,26 +164,92 @@
     </table>
 
     <script>
-        const REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/refs/heads/main/vocabulary.csv';
+        const VOCAB_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/vocabulary.csv';
+        const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
+        
         let sortDirections = [true, true];
         let remainingEntries = []; 
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
 
-        window.addEventListener('DOMContentLoaded', loadDataset);
+        window.addEventListener('DOMContentLoaded', initializeData);
 
-        async function loadDataset() {
+        async function initializeData() {
+            // First load removed.csv (local fallback to remote GitHub)
+            await loadRemovedCSV();
+            // Then load vocabulary.csv (local fallback to remote GitHub)
+            await loadVocabularyCSV();
+        }
+
+        async function loadRemovedCSV() {
+            const existingRemovedSet = new Set(removedEntries.map(e => e.word));
+
+            try {
+                // 1. Try local removed.csv
+                const response = await fetch('removed.csv');
+                if (!response.ok) throw new Error('Local removed.csv not found');
+                const text = await response.text();
+                parseRemovedCSV(text, existingRemovedSet);
+            } catch (localErr) {
+                // 2. Fallback to GitHub removed.csv
+                try {
+                    const response = await fetch(REMOVED_REMOTE_URL);
+                    if (response.ok) {
+                        const text = await response.text();
+                        parseRemovedCSV(text, existingRemovedSet);
+                    }
+                } catch (remoteErr) {
+                    console.log('No remote removed.csv found, starting fresh.');
+                }
+            }
+
+            localStorage.setItem('vocab_removed_entries', JSON.stringify(removedEntries));
+            updateRemovedCount();
+        }
+
+        function parseRemovedCSV(text, existingSet) {
+            const lines = text.split(/\r?\n/);
+            let currentHeader = '';
+            let currentWord = '';
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) return;
+
+                if (trimmedLine.startsWith('~:')) {
+                    const description = trimmedLine.substring(2).trim();
+
+                    if (currentWord && !existingSet.has(currentWord)) {
+                        removedEntries.push({
+                            header: currentHeader,
+                            word: currentWord,
+                            description: description
+                        });
+                        existingSet.add(currentWord);
+                    }
+                    currentWord = '';
+                    currentHeader = '';
+                } else {
+                    currentHeader = trimmedLine;
+                    currentWord = trimmedLine.split(',')[0].trim();
+                }
+            });
+        }
+
+        async function loadVocabularyCSV() {
             const statusDiv = document.getElementById('status');
             
             try {
+                // 1. Try local vocabulary.csv
                 const response = await fetch('vocabulary.csv');
-                if (!response.ok) throw new Error('Local file not found');
+                if (!response.ok) throw new Error('Local vocabulary.csv not found');
                 const text = await response.text();
                 statusDiv.style.display = 'none';
                 parseAndDisplayCSV(text);
             } catch (localErr) {
+                // 2. Fallback to GitHub vocabulary.csv
                 statusDiv.innerText = 'Local vocabulary.csv not found. Fetching from GitHub...';
                 try {
-                    const response = await fetch(REMOTE_URL);
+                    const response = await fetch(VOCAB_REMOTE_URL);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const text = await response.text();
                     statusDiv.style.display = 'none';
@@ -271,7 +336,6 @@
                 row.appendChild(descTd);
                 row.appendChild(actionTd);
 
-                // Add Touch Swipe Events for Mobile/Tablet
                 attachSwipeGesture(row, index);
 
                 tbody.appendChild(row);
@@ -281,7 +345,7 @@
         function attachSwipeGesture(row, index) {
             let startX = 0;
             let currentX = 0;
-            const threshold = 70; // Swipe distance in px needed to trigger removal
+            const threshold = 70;
 
             row.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
@@ -292,7 +356,6 @@
                 currentX = e.touches[0].clientX;
                 const deltaX = currentX - startX;
                 
-                // Translate row horizontally during drag gesture
                 if (Math.abs(deltaX) > 10) {
                     row.style.transform = `translateX(${deltaX}px)`;
                     row.style.opacity = `${1 - Math.abs(deltaX) / 250}`;
@@ -303,14 +366,12 @@
                 const deltaX = currentX - startX;
                 row.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
 
-                // Swipe Left or Right beyond threshold triggers deletion
                 if (Math.abs(deltaX) > threshold) {
                     const direction = deltaX > 0 ? 300 : -300;
                     row.style.transform = `translateX(${direction}px)`;
                     row.style.opacity = '0';
                     setTimeout(() => removeWord(index), 200);
                 } else {
-                    // Reset row position if swipe distance wasn't far enough
                     row.style.transform = 'translateX(0px)';
                     row.style.opacity = '1';
                 }
@@ -336,37 +397,12 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
-                const lines = text.split(/\r?\n/);
-                let currentHeader = '';
-                let currentWord = '';
-
                 const existingRemovedSet = new Set(removedEntries.map(item => item.word));
-
-                lines.forEach(line => {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine) return;
-
-                    if (trimmedLine.startsWith('~:')) {
-                        const description = trimmedLine.substring(2).trim();
-
-                        if (currentWord && !existingRemovedSet.has(currentWord)) {
-                            removedEntries.push({
-                                header: currentHeader,
-                                word: currentWord,
-                                description: description
-                            });
-                            existingRemovedSet.add(currentWord);
-                        }
-                        currentWord = '';
-                        currentHeader = '';
-                    } else {
-                        currentHeader = trimmedLine;
-                        currentWord = trimmedLine.split(',')[0].trim();
-                    }
-                });
+                
+                parseRemovedCSV(text, existingRemovedSet);
 
                 localStorage.setItem('vocab_removed_entries', JSON.stringify(removedEntries));
-                loadDataset();
+                loadVocabularyCSV();
                 event.target.value = '';
             };
             reader.readAsText(file);
@@ -399,7 +435,7 @@
             if (confirm("Restore all removed words back to the main list?")) {
                 localStorage.removeItem('vocab_removed_entries');
                 removedEntries = [];
-                loadDataset();
+                loadVocabularyCSV();
             }
         }
 
