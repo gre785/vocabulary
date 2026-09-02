@@ -80,6 +80,11 @@
             color: white;
         }
         .btn-reset:hover { background-color: #5a6268; }
+        .btn-toggle {
+            background-color: #fd7e14;
+            color: white;
+        }
+        .btn-toggle:hover { background-color: #e96b00; }
         
         .table-container {
             width: 100%;
@@ -192,6 +197,9 @@
             <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
                 Download (<span id="removedCount">0</span>)
             </button>
+            <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
+                Show Top 3000
+            </button>
             <button class="btn btn-reset" onclick="resetRemovedWords()">
                 Restore
             </button>
@@ -227,14 +235,17 @@
     <script>
         const VOCAB_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/vocabulary.csv';
         const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
+        const HIDE_TOP_3000_THRESHOLD = 3000;
         
         let sortDirections = [true, true];
         let remainingEntries = []; 
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
+        let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
         async function initializeData() {
+            updateToggleButton();
             await loadRemovedCSV();
             await loadVocabularyCSV();
         }
@@ -357,11 +368,20 @@
             renderTable();
         }
 
+        function getDisplayEntries() {
+            if (hideTop3000) {
+                return remainingEntries.filter(entry => entry.rank > HIDE_TOP_3000_THRESHOLD);
+            }
+            return remainingEntries;
+        }
+
         function renderTable() {
             const tbody = document.querySelector('#vocabTable tbody');
             tbody.innerHTML = ''; 
 
-            remainingEntries.forEach((entry, index) => {
+            const displayEntries = getDisplayEntries();
+
+            displayEntries.forEach((entry, displayIndex) => {
                 const row = document.createElement('tr');
                 
                 const rankTd = document.createElement('td');
@@ -382,7 +402,7 @@
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-btn';
                 removeBtn.textContent = 'X';
-                removeBtn.onclick = () => removeWord(index);
+                removeBtn.onclick = () => removeWord(entry.word);
                 
                 actionTd.appendChild(removeBtn);
 
@@ -391,13 +411,13 @@
                 row.appendChild(descTd);
                 row.appendChild(actionTd);
 
-                attachSwipeGesture(row, index);
+                attachSwipeGesture(row, entry.word);
 
                 tbody.appendChild(row);
             });
         }
 
-        function attachSwipeGesture(row, index) {
+        function attachSwipeGesture(row, word) {
             let startX = 0;
             let currentX = 0;
             const threshold = 70;
@@ -425,7 +445,7 @@
                     const direction = deltaX > 0 ? 300 : -300;
                     row.style.transform = `translateX(${direction}px)`;
                     row.style.opacity = '0';
-                    setTimeout(() => removeWord(index), 200);
+                    setTimeout(() => removeWord(word), 200);
                 } else {
                     row.style.transform = 'translateX(0px)';
                     row.style.opacity = '1';
@@ -435,7 +455,10 @@
             });
         }
 
-        function removeWord(index) {
+        function removeWord(word) {
+            const index = remainingEntries.findIndex(e => e.word === word);
+            if (index === -1) return;
+
             const [removed] = remainingEntries.splice(index, 1);
             removedEntries.push(removed);
 
@@ -491,6 +514,24 @@
                 localStorage.removeItem('vocab_removed_entries');
                 removedEntries = [];
                 loadVocabularyCSV();
+            }
+        }
+
+        function toggleHideTop3000() {
+            hideTop3000 = !hideTop3000;
+            localStorage.setItem('vocab_hide_top_3000', JSON.stringify(hideTop3000));
+            updateToggleButton();
+            renderTable();
+        }
+
+        function updateToggleButton() {
+            const toggleBtn = document.getElementById('toggleBtn');
+            if (hideTop3000) {
+                toggleBtn.textContent = 'Show Top 3000';
+                toggleBtn.style.backgroundColor = '#fd7e14';
+            } else {
+                toggleBtn.textContent = 'Hide Top 3000';
+                toggleBtn.style.backgroundColor = '#6f42c1';
             }
         }
 
