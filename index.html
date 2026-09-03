@@ -385,6 +385,7 @@
             font-weight: bold;
             transition: background-color 0.2s;
             flex: 1 1 auto;
+            /* margin-right: auto; */
         }
 
         .btn-speak:hover {
@@ -589,9 +590,11 @@
     <div id="explanationModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
+                <div class="modal-controls">
+                    <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊</button>
+                </div>
                 <h2 id="modalWord"></h2>
                 <span class="close-btn" onclick="closeExplanationModal()">&times;</span>
-                <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊</button>
             </div>
             <div id="explanationBody"></div>
         </div>
