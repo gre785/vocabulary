@@ -564,6 +564,16 @@
         </div>
     </div>
 
+      <div class="description-box">
+        <ul>
+        <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
+        <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
+        <li><strong>Click on any word</strong> to get AI-powered examples and hear pronunciation</li>
+        <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
+        <li>For API key, login to your google account and require a free key from https://aistudio.google.com/api-keys</li>
+        </ul>
+    </div>
+    
     <div class="controls" style="margin-bottom: 12px;">
         <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;" onchange="handleUploadRemovedCSV(event)">
         
@@ -584,17 +594,7 @@
         </button>
     </div>
 
-    <div class="description-box">
-        <ul>
-        <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
-        <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
-        <li><strong>Click on any word</strong> to get AI-powered examples and hear pronunciation</li>
-        <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
-        <li>For API key, login to your google account and require a free key from https://aistudio.google.com/api-keys</li>
-        </ul>
-    </div>
-
-    <div id="status">Checking for local files...</div>
+      <div id="status">Checking for local files...</div>
 
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search words (type first letter or word prefix)..." onkeyup="filterTable()">
