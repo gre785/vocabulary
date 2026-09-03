@@ -157,6 +157,12 @@
         }
         .btn-toggle:hover { background-color: #e96b00; }
 
+        .btn-toggle-desc {
+            background-color: #9c27b0;
+            color: white;
+        }
+        .btn-toggle-desc:hover { background-color: #7b1fa2; }
+
         .btn-dark-mode {
             background-color: #555;
             color: white;
@@ -262,6 +268,10 @@
             line-height: 1.4;
             font-size: 0.95em;
             color: var(--text-secondary);
+        }
+
+        .desc-col.hidden {
+            display: none;
         }
 
         .action-col {
@@ -521,6 +531,9 @@
         <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
             Show Top 3000
         </button>
+        <button id="toggleDescBtn" class="btn btn-toggle-desc" onclick="toggleDescriptionColumn()">
+            Hide Description
+        </button>
         <button class="btn btn-reset" onclick="resetRemovedWords()">
             Restore
         </button>
@@ -543,7 +556,7 @@
                 <tr>
                     <th class="sortable" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span></th>
                     <th class="sortable" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span></th>
-                    <th>Description</th>
+                    <th id="descHeader">Description</th>
                     <th></th>
                 </tr>
             </thead>
@@ -577,6 +590,7 @@
         let remainingEntries = []; 
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
         let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
+        let hideDescription = JSON.parse(localStorage.getItem('vocab_hide_description') || 'false');
         let currentWord = '';
 
         window.addEventListener('DOMContentLoaded', initializeData);
@@ -590,6 +604,7 @@
         async function initializeData() {
             initializeDarkMode();
             updateToggleButton();
+            updateToggleDescButton();
             await loadRemovedCSV();
             await loadVocabularyCSV();
         }
@@ -739,6 +754,9 @@
 
                 const descTd = document.createElement('td');
                 descTd.className = 'desc-col';
+                if (hideDescription) {
+                    descTd.classList.add('hidden');
+                }
                 descTd.textContent = entry.description;
 
                 const actionTd = document.createElement('td');
@@ -869,6 +887,13 @@
             renderTable();
         }
 
+        function toggleDescriptionColumn() {
+            hideDescription = !hideDescription;
+            localStorage.setItem('vocab_hide_description', JSON.stringify(hideDescription));
+            updateToggleDescButton();
+            renderTable();
+        }
+
         function updateToggleButton() {
             const toggleBtn = document.getElementById('toggleBtn');
             if (hideTop3000) {
@@ -877,6 +902,21 @@
             } else {
                 toggleBtn.textContent = 'Hide Top 3000';
                 toggleBtn.style.backgroundColor = '#6f42c1';
+            }
+        }
+
+        function updateToggleDescButton() {
+            const toggleDescBtn = document.getElementById('toggleDescBtn');
+            const descHeader = document.getElementById('descHeader');
+            
+            if (hideDescription) {
+                toggleDescBtn.textContent = 'Show Description';
+                toggleDescBtn.style.backgroundColor = '#6c757d';
+                descHeader.classList.add('hidden');
+            } else {
+                toggleDescBtn.textContent = 'Hide Description';
+                toggleDescBtn.style.backgroundColor = '#9c27b0';
+                descHeader.classList.remove('hidden');
             }
         }
 
@@ -999,50 +1039,30 @@
                     throw new Error('Empty response from API');
                 }
 
-                return formatGeminiResponse(word, content);
+                return content.replace(/\n/g, '<br>');
             } catch (error) {
-                console.error('Gemini API Error:', error);
                 throw error;
             }
         }
 
-        function formatGeminiResponse(word, text) {
-            // Format the response into clean HTML
-            const formatted = text
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line.length > 0)
-                .map((line, index) => {
-                    if (/^\d+\./.test(line)) {
-                        return `<div style="margin: 10px 0; line-height: 1.6;"><strong>${line.substring(0, 2)}</strong> ${line.substring(2)}</div>`;
-                    }
-                    return `<p>${line}</p>`;
-                })
-                .join('');
-
-            return `
-                <div class="explanation-content">
-                    <h3>Examples of "${word}"</h3>
-                    ${formatted}
-                </div>
-            `;
+        function closeExplanationModal() {
+            document.getElementById('explanationModal').style.display = 'none';
         }
 
         function speakWord() {
-            if (!currentWord) return;
-            
-            const utterance = new SpeechSynthesisUtterance(currentWord);
+            const word = currentWord;
+            if (!word) return;
+
+            const utterance = new SpeechSynthesisUtterance(word);
             utterance.rate = 0.8;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(utterance);
+            speechSynthesis.speak(utterance);
         }
 
-        function closeExplanationModal() {
-            document.getElementById('explanationModal').style.display = 'none';
-            window.speechSynthesis.cancel();
+        window.onclick = function(event) {
+            const modal = document.getElementById('explanationModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
