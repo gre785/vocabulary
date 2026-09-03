@@ -186,6 +186,32 @@
         html.dark-mode .btn-dark-mode:hover {
             background-color: #ffed4e;
         }
+
+        .search-container {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--header-bg);
+            box-shadow: 0 0 3px var(--header-bg);
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
         
         .table-container {
             width: 100%;
@@ -570,6 +596,10 @@
 
     <div id="status">Checking for local files...</div>
 
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search words (type first letter or word prefix)..." onkeyup="filterTable()">
+    </div>
+
     <div class="table-container">
         <table id="vocabTable">
             <thead>
@@ -613,6 +643,7 @@
         let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
         let hideDescription = JSON.parse(localStorage.getItem('vocab_hide_description') || 'false');
         let currentWord = '';
+        let searchQuery = '';
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
@@ -749,10 +780,23 @@
         }
 
         function getDisplayEntries() {
+            let entries = remainingEntries;
+            
             if (hideTop3000) {
-                return remainingEntries.filter(entry => entry.rank > HIDE_TOP_3000_THRESHOLD);
+                entries = entries.filter(entry => entry.rank > HIDE_TOP_3000_THRESHOLD);
             }
-            return remainingEntries;
+            
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                entries = entries.filter(entry => entry.word.toLowerCase().startsWith(query));
+            }
+            
+            return entries;
+        }
+
+        function filterTable() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderTable();
         }
 
         function renderTable() {
@@ -897,6 +941,8 @@
             if (confirm("Restore all removed words back to the main list?")) {
                 localStorage.removeItem('vocab_removed_entries');
                 removedEntries = [];
+                searchQuery = '';
+                document.getElementById('searchInput').value = '';
                 loadVocabularyCSV();
                 clearApiKey();
             }
@@ -999,79 +1045,85 @@
             }
         }
 
+        async function getGeminiExamples(word, apiKey) {
+            const prompt = `Provide 3-5 real-world examples of how to use the word "${word}" in English sentences. Format the response with:
+1. Definition (1-2 sentences)
+2. 3-5 Example Sentences (with the word in context)
+3. Tips for Usage (optional)
+
+Keep it concise and practical.`;
+
+            const response = await fetch(GEMINI_API_URL + '?key=' + apiKey, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                {
+                                    text: prompt
+                                }
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'Failed to fetch from Gemini API');
+            }
+
+            const data = await response.json();
+            const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if (!textContent) {
+                throw new Error('No response from API');
+            }
+
+            return textContent.replace(/\n/g, '<br>');
+        }
+
+        function getGeminiApiKey() {
+            return localStorage.getItem('gemini_api_key');
+        }
+
         function getApiKeySetupPrompt() {
+            const apiKey = getGeminiApiKey();
             return `
                 <div class="setup-prompt">
-                    <p><strong>Set up Google Gemini API Key</strong></p>
-                    <p>To enable AI-powered examples, get a free API key from <a href="https://ai.google.dev" target="_blank">Google AI Studio</a>.</p>
-                    <input type="password" id="geminiKeyInput" placeholder="Paste your Gemini API key here" style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px;">
-                    <button onclick="saveGeminiApiKey()">Save API Key</button>
+                    <h3>Setup API Key</h3>
+                    <p>To get AI-powered word examples, you need a free Google Gemini API key:</p>
+                    <ol>
+                        <li>Go to <a href="https://aistudio.google.com/api-keys" target="_blank">aistudio.google.com/api-keys</a></li>
+                        <li>Click "Create API Key"</li>
+                        <li>Copy the key and paste it below</li>
+                    </ol>
+                    <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API key here..." value="${apiKey || ''}">
+                    <button onclick="saveApiKey()">Save API Key</button>
                 </div>
             `;
         }
 
-        function saveGeminiApiKey() {
-            const apiKey = document.getElementById('geminiKeyInput')?.value?.trim();
-            if (apiKey) {
-                localStorage.setItem('gemini_api_key', apiKey);
-                // Reload the explanation
-                const word = currentWord;
-                closeExplanationModal();
-                showExplanation(word);
-            } else {
-                alert('Please enter a valid API key.');
+        function saveApiKey() {
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                alert('Please enter a valid API key');
+                return;
             }
-        }
-
-        function getGeminiApiKey() {
-            return localStorage.getItem('gemini_api_key') || '';
+            
+            localStorage.setItem('gemini_api_key', apiKey);
+            alert('API Key saved successfully!');
+            showExplanation(currentWord);
         }
 
         function clearApiKey() {
             if (confirm('Are you sure you want to clear the API key?')) {
                 localStorage.removeItem('gemini_api_key');
-                alert('API key has been cleared.');
-                closeExplanationModal();
-            }
-        }
-
-        async function getGeminiExamples(word, apiKey) {
-            const prompt = `Give me 3 examples of using the word "${word}" in sentences. Format each example on a new line starting with a number (1., 2., 3.).`;
-
-            try {
-                const response = await fetch(`${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: prompt
-                            }]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || `API error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (!data.candidates || data.candidates.length === 0) {
-                    throw new Error('No response from API');
-                }
-
-                const content = data.candidates[0].content?.parts?.[0]?.text || '';
-                if (!content) {
-                    throw new Error('Empty response from API');
-                }
-
-                return content.replace(/\n/g, '<br>');
-            } catch (error) {
-                throw error;
             }
         }
 
@@ -1080,18 +1132,8 @@
         }
 
         function speakWord() {
-            const word = document.getElementById('modalWord')?.textContent.trim() || '';
-            const explanation = document.getElementById('explanationBody')?.textContent.trim() || '';
-
-            const text = `${word}. ${explanation}`;
-            if (!text.trim()) return;
-
-            speechSynthesis.cancel();
-
-            const utterance = new SpeechSynthesisUtterance(text);
+            const utterance = new SpeechSynthesisUtterance(currentWord);
             utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-
             speechSynthesis.speak(utterance);
         }
 
