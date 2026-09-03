@@ -372,6 +372,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .btn-speak {
@@ -383,7 +384,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.2s;
-            flex: 1;
+            flex: 1 1 auto;
         }
 
         .btn-speak:hover {
@@ -393,6 +394,22 @@
         .btn-speak:disabled {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+
+        .btn-clear-api {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            flex: 1 1 auto;
+        }
+
+        .btn-clear-api:hover {
+            background-color: #c82333;
         }
 
         .explanation-content {
@@ -477,6 +494,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.2s;
+            width: 100%;
         }
 
         .setup-prompt button:hover {
@@ -575,6 +593,7 @@
             </div>
             <div class="modal-controls">
                 <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊 Pronounce</button>
+                <button class="btn-clear-api" id="clearApiBtn" onclick="clearApiKey()">Clear API Key</button>
             </div>
             <div id="explanationBody"></div>
         </div>
@@ -983,7 +1002,7 @@
                     <p><strong>Set up Google Gemini API Key</strong></p>
                     <p>To enable AI-powered examples, get a free API key from <a href="https://ai.google.dev" target="_blank">Google AI Studio</a>.</p>
                     <input type="password" id="geminiKeyInput" placeholder="Paste your Gemini API key here" style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 4px;">
-                    <button onclick="saveGeminiApiKey()" style="width: 100%; background-color: #1f2937; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Save API Key</button>
+                    <button onclick="saveGeminiApiKey()">Save API Key</button>
                 </div>
             `;
         }
@@ -1003,6 +1022,14 @@
 
         function getGeminiApiKey() {
             return localStorage.getItem('gemini_api_key') || '';
+        }
+
+        function clearApiKey() {
+            if (confirm('Are you sure you want to clear the API key?')) {
+                localStorage.removeItem('gemini_api_key');
+                alert('API key has been cleared.');
+                closeExplanationModal();
+            }
         }
 
         async function getGeminiExamples(word, apiKey) {
