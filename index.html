@@ -547,7 +547,7 @@
             Removed (<span id="removedCount">0</span>)
         </button>
         <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
-            Show Top 3000
+            Show Easy
         </button>
         <button id="toggleDescBtn" class="btn btn-toggle-desc" onclick="toggleDescriptionColumn()">
             Hide Description
@@ -918,10 +918,10 @@
         function updateToggleButton() {
             const toggleBtn = document.getElementById('toggleBtn');
             if (hideTop3000) {
-                toggleBtn.textContent = 'Show Top 3000';
+                toggleBtn.textContent = 'Show Easy';
                 toggleBtn.style.backgroundColor = '#fd7e14';
             } else {
-                toggleBtn.textContent = 'Hide Top 3000';
+                toggleBtn.textContent = 'Hide Easy';
                 toggleBtn.style.backgroundColor = '#6f42c1';
             }
         }
