@@ -593,8 +593,7 @@
                 <span class="close-btn" onclick="closeExplanationModal()">&times;</span>
             </div>
             <div class="modal-controls">
-                <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊 Pronounce</button>
-                <button class="btn-clear-api" id="clearApiBtn" onclick="clearApiKey()">Clear API Key</button>
+                <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊</button>
             </div>
             <div id="explanationBody"></div>
         </div>
@@ -898,6 +897,7 @@
                 localStorage.removeItem('vocab_removed_entries');
                 removedEntries = [];
                 loadVocabularyCSV();
+                clearApiKey();
             }
         }
 
@@ -1079,11 +1079,18 @@
         }
 
         function speakWord() {
-            const word = currentWord;
-            if (!word) return;
+            const word = document.getElementById('modalWord')?.textContent.trim() || '';
+            const explanation = document.getElementById('explanationBody')?.textContent.trim() || '';
 
-            const utterance = new SpeechSynthesisUtterance(word);
+            const text = `${word}. ${explanation}`;
+            if (!text.trim()) return;
+
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
             utterance.rate = 0.8;
+
             speechSynthesis.speak(utterance);
         }
 
