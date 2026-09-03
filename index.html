@@ -563,6 +563,7 @@
         <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
         <li><strong>Click on any word</strong> to get AI-powered examples and hear pronunciation</li>
         <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
+        <li></li>For API key, use https://aistudio.google.com/api-keys</li>
         </ul>
     </div>
 
@@ -603,7 +604,8 @@
         const VOCAB_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/vocabulary.csv';
         const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
         const HIDE_TOP_3000_THRESHOLD = 3000;
-        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        // https://aistudio.google.com/api-keys
+        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
         
         let sortDirections = [true, true];
         let remainingEntries = []; 
