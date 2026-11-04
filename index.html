@@ -568,9 +568,8 @@
         <ul>
         <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
         <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
-        <li><strong>Click on any word</strong> to get AI-powered examples and hear pronunciation</li>
+        <li><strong>Click on any word</strong> to get more details</li>
         <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
-        <li>For API key, login to your google account and require a free key from https://aistudio.google.com/api-keys</li>
         </ul>
     </div>
     
@@ -633,10 +632,9 @@
     <script>
         const VOCAB_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/vocabulary.csv';
         const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
+        const DICTIONARY_URL = 'https://freedictionaryapi.com/api/v1/entries/en/';
         const HIDE_TOP_3000_THRESHOLD = 3000;
-        // https://aistudio.google.com/api-keys
-        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
-        
+
         let sortDirections = [true, true];
         let remainingEntries = []; 
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
@@ -944,7 +942,6 @@
                 searchQuery = '';
                 document.getElementById('searchInput').value = '';
                 loadVocabularyCSV();
-                clearApiKey();
             }
         }
 
@@ -1028,103 +1025,19 @@
             
             modal.style.display = 'block';
             
-            const apiKey = getGeminiApiKey();
-            if (!apiKey) {
-                explanationBody.innerHTML = getApiKeySetupPrompt();
-                return;
-            }
-            
             try {
-                const explanation = await getGeminiExamples(word, apiKey);
+                const explanation = await getExamples(word);
                 explanationBody.innerHTML = `<div class="explanation-content">${explanation}</div>`;
             } catch (error) {
                 explanationBody.innerHTML = `
                     <div class="error-msg">Failed to load examples: ${error.message}</div>
-                    <p>Please check your API key or try again later.</p>
                 `;
             }
         }
 
-        async function getGeminiExamples(word, apiKey) {
-            const prompt = `Provide 3-5 real-world examples of how to use the word "${word}" in English sentences. Format the response with:
-1. Definition (1-2 sentences)
-2. 3-5 Example Sentences (with the word in context)
-3. Tips for Usage (optional)
-
-Keep it concise and practical.`;
-
-            const response = await fetch(GEMINI_API_URL + '?key=' + apiKey, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                {
-                                    text: prompt
-                                }
-                            ]
-                        }
-                    ]
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || 'Failed to fetch from Gemini API');
-            }
-
-            const data = await response.json();
-            const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            if (!textContent) {
-                throw new Error('No response from API');
-            }
-
-            return textContent.replace(/\n/g, '<br>');
-        }
-
-        function getGeminiApiKey() {
-            return localStorage.getItem('gemini_api_key');
-        }
-
-        function getApiKeySetupPrompt() {
-            const apiKey = getGeminiApiKey();
-            return `
-                <div class="setup-prompt">
-                    <h3>Setup API Key</h3>
-                    <p>To get AI-powered word examples, you need a free Google Gemini API key:</p>
-                    <ol>
-                        <li>Go to <a href="https://aistudio.google.com/api-keys" target="_blank">aistudio.google.com/api-keys</a></li>
-                        <li>Click "Create API Key"</li>
-                        <li>Copy the key and paste it below</li>
-                    </ol>
-                    <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API key here..." value="${apiKey || ''}">
-                    <button onclick="saveApiKey()">Save API Key</button>
-                </div>
-            `;
-        }
-
-        function saveApiKey() {
-            const apiKeyInput = document.getElementById('apiKeyInput');
-            const apiKey = apiKeyInput.value.trim();
-            
-            if (!apiKey) {
-                alert('Please enter a valid API key');
-                return;
-            }
-            
-            localStorage.setItem('gemini_api_key', apiKey);
-            alert('API Key saved successfully!');
-            showExplanation(currentWord);
-        }
-
-        function clearApiKey() {
-            if (confirm('Are you sure you want to clear the API key?')) {
-                localStorage.removeItem('gemini_api_key');
-            }
+        async function getExamples(word)
+        {
+            return "examples from API";
         }
 
         function closeExplanationModal() {
