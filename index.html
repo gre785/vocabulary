@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +26,7 @@
             --status-text: #555;
             --error-bg: #f8d7da;
             --error-text: #721c24;
-            --table-shadow: rgba(0,0,0,0.1);
+            --table-shadow: rgba(0, 0, 0, 0.1);
             --modal-bg: #fefefe;
             --modal-shadow: rgba(0, 0, 0, 0.1);
             --close-color: #aaa;
@@ -51,7 +52,7 @@
             --status-text: #b0c4de;
             --error-bg: #3a2a2a;
             --error-text: #ff9999;
-            --table-shadow: rgba(0,0,0,0.3);
+            --table-shadow: rgba(0, 0, 0, 0.3);
             --modal-bg: #2d2d2d;
             --modal-shadow: rgba(0, 0, 0, 0.5);
             --close-color: #999;
@@ -91,7 +92,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .description-box {
             background-color: var(--bg-secondary);
             border-left: 4px solid var(--header-bg);
@@ -137,31 +138,46 @@
             background-color: #17a2b8;
             color: white;
         }
-        .btn-upload:hover { background-color: #138496; }
+
+        .btn-upload:hover {
+            background-color: #138496;
+        }
 
         .btn-download {
             background-color: #28a745;
             color: white;
         }
-        .btn-download:hover { background-color: #218838; }
+
+        .btn-download:hover {
+            background-color: #218838;
+        }
 
         .btn-reset {
             background-color: #6c757d;
             color: white;
         }
-        .btn-reset:hover { background-color: #5a6268; }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
 
         .btn-toggle {
             background-color: #fd7e14;
             color: white;
         }
-        .btn-toggle:hover { background-color: #e96b00; }
+
+        .btn-toggle:hover {
+            background-color: #e96b00;
+        }
 
         .btn-toggle-desc {
             background-color: #9c27b0;
             color: white;
         }
-        .btn-toggle-desc:hover { background-color: #7b1fa2; }
+
+        .btn-toggle-desc:hover {
+            background-color: #7b1fa2;
+        }
 
         .btn-dark-mode {
             background-color: #555;
@@ -174,8 +190,8 @@
             transition: background-color 0.2s;
         }
 
-        .btn-dark-mode:hover { 
-            background-color: #333; 
+        .btn-dark-mode:hover {
+            background-color: #333;
         }
 
         html.dark-mode .btn-dark-mode {
@@ -212,7 +228,7 @@
         #searchInput::placeholder {
             color: var(--text-muted);
         }
-        
+
         .table-container {
             width: 100%;
             overflow-x: auto;
@@ -227,7 +243,8 @@
             table-layout: auto;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px 8px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
@@ -248,8 +265,8 @@
             transition: background-color 0.2s;
         }
 
-        th.sortable:hover { 
-            background-color: var(--header-hover); 
+        th.sortable:hover {
+            background-color: var(--header-hover);
         }
 
         tbody tr {
@@ -257,16 +274,16 @@
             transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s;
         }
 
-        tbody tr:nth-child(odd) { 
-            background-color: var(--bg-secondary); 
+        tbody tr:nth-child(odd) {
+            background-color: var(--bg-secondary);
         }
 
-        tbody tr:nth-child(even) { 
-            background-color: var(--bg-tertiary); 
+        tbody tr:nth-child(even) {
+            background-color: var(--bg-tertiary);
         }
 
-        tbody tr:hover { 
-            background-color: var(--hover-bg); 
+        tbody tr:hover {
+            background-color: var(--hover-bg);
         }
 
         .rank-col {
@@ -305,8 +322,9 @@
             text-align: center;
         }
 
-        th:first-child, th:last-child { 
-            text-align: center; 
+        th:first-child,
+        th:last-child {
+            text-align: center;
         }
 
         .sort-icon {
@@ -326,8 +344,8 @@
             transition: background-color 0.2s;
         }
 
-        .remove-btn:hover { 
-            background-color: #c82333; 
+        .remove-btn:hover {
+            background-color: #c82333;
         }
 
         /* Modal styles */
@@ -342,10 +360,15 @@
             background-color: rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.2s;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -364,8 +387,15 @@
         }
 
         @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
@@ -455,7 +485,8 @@
             margin: 8px 0;
         }
 
-        .explanation-content ul, .explanation-content ol {
+        .explanation-content ul,
+        .explanation-content ol {
             margin: 8px 0;
             padding-left: 20px;
         }
@@ -477,8 +508,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .error-msg {
@@ -489,7 +525,8 @@
             margin-bottom: 10px;
         }
 
-        input[type="password"], input[type="text"] {
+        input[type="password"],
+        input[type="text"] {
             background-color: var(--bg-secondary);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
@@ -532,23 +569,30 @@
             body {
                 padding: 10px 8px;
             }
+
             .header-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .header-right {
                 width: 100%;
             }
+
             .controls {
                 width: 100%;
             }
-            th, td {
+
+            th,
+            td {
                 padding: 8px 6px;
                 font-size: 0.9em;
             }
+
             .word-col {
                 font-size: 0.95em;
             }
+
             .modal-content {
                 width: 95%;
                 margin: 20% auto;
@@ -556,6 +600,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="header-bar">
@@ -564,18 +609,19 @@
         </div>
     </div>
 
-      <div class="description-box">
+    <div class="description-box">
         <ul>
-        <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
-        <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
-        <li><strong>Click on any word</strong> to get more details</li>
-        <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
+            <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
+            <li>Swipe left or right, or tap the <strong>X</strong> button to remove known word</li>
+            <li><strong>Click on any word</strong> to get more details</li>
+            <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
         </ul>
     </div>
-    
+
     <div class="controls" style="margin-bottom: 12px;">
-        <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;" onchange="handleUploadRemovedCSV(event)">
-        
+        <input type="file" id="uploadCsvInput" accept=".csv" style="display: none;"
+            onchange="handleUploadRemovedCSV(event)">
+
         <button class="btn btn-upload" onclick="document.getElementById('uploadCsvInput').click()">
             Upload
         </button>
@@ -593,18 +639,21 @@
         </button>
     </div>
 
-      <div id="status">Checking for local files...</div>
+    <div id="status">Checking for local files...</div>
 
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search words (type first letter or word prefix)..." onkeyup="filterTable()">
+        <input type="text" id="searchInput" placeholder="Search words (type first letter or word prefix)..."
+            onkeyup="filterTable()">
     </div>
 
     <div class="table-container">
         <table id="vocabTable">
             <thead>
                 <tr>
-                    <th class="sortable" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span></th>
-                    <th class="sortable" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span></th>
+                    <th class="sortable" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span>
+                    </th>
+                    <th class="sortable" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span>
+                    </th>
                     <th id="descHeader">Description</th>
                     <th></th>
                 </tr>
@@ -636,7 +685,7 @@
         const HIDE_TOP_3000_THRESHOLD = 3000;
 
         let sortDirections = [true, true];
-        let remainingEntries = []; 
+        let remainingEntries = [];
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
         let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
         let hideDescription = JSON.parse(localStorage.getItem('vocab_hide_description') || 'true');
@@ -714,7 +763,7 @@
 
         async function loadVocabularyCSV() {
             const statusDiv = document.getElementById('status');
-            
+
             try {
                 const response = await fetch('vocabulary.csv');
                 if (!response.ok) throw new Error('Local vocabulary.csv not found');
@@ -755,7 +804,7 @@
 
                     if (currentWord) {
                         const originalRank = rawRankCounter++;
-                        
+
                         if (!removedWordSet.has(currentWord)) {
                             remainingEntries.push({
                                 rank: originalRank,
@@ -764,7 +813,7 @@
                                 description: description
                             });
                         }
-                        currentWord = ''; 
+                        currentWord = '';
                         currentHeader = '';
                     }
                 } else {
@@ -779,16 +828,16 @@
 
         function getDisplayEntries() {
             let entries = remainingEntries;
-            
+
             if (hideTop3000) {
                 entries = entries.filter(entry => entry.rank > HIDE_TOP_3000_THRESHOLD);
             }
-            
+
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 entries = entries.filter(entry => entry.word.toLowerCase().startsWith(query));
             }
-            
+
             return entries;
         }
 
@@ -799,13 +848,13 @@
 
         function renderTable() {
             const tbody = document.querySelector('#vocabTable tbody');
-            tbody.innerHTML = ''; 
+            tbody.innerHTML = '';
 
             const displayEntries = getDisplayEntries();
 
             displayEntries.forEach((entry, displayIndex) => {
                 const row = document.createElement('tr');
-                
+
                 const rankTd = document.createElement('td');
                 rankTd.className = 'rank-col';
                 rankTd.textContent = entry.rank;
@@ -824,12 +873,12 @@
 
                 const actionTd = document.createElement('td');
                 actionTd.className = 'action-col';
-                
+
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-btn';
                 removeBtn.textContent = 'X';
                 removeBtn.onclick = () => removeWord(entry.word);
-                
+
                 actionTd.appendChild(removeBtn);
 
                 row.appendChild(rankTd);
@@ -856,7 +905,7 @@
             row.addEventListener('touchmove', (e) => {
                 currentX = e.touches[0].clientX;
                 const deltaX = currentX - startX;
-                
+
                 if (Math.abs(deltaX) > 10) {
                     row.style.transform = `translateX(${deltaX}px)`;
                     row.style.opacity = `${1 - Math.abs(deltaX) / 250}`;
@@ -899,10 +948,10 @@
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const text = e.target.result;
                 const existingRemovedSet = new Set(removedEntries.map(item => item.word));
-                
+
                 parseRemovedCSV(text, existingRemovedSet);
 
                 localStorage.setItem('vocab_removed_entries', JSON.stringify(removedEntries));
@@ -973,7 +1022,7 @@
         function updateToggleDescButton() {
             const toggleDescBtn = document.getElementById('toggleDescBtn');
             const descHeader = document.getElementById('descHeader');
-            
+
             if (hideDescription) {
                 toggleDescBtn.textContent = 'Show Description';
                 toggleDescBtn.style.backgroundColor = '#6c757d';
@@ -995,8 +1044,8 @@
                 if (isNumeric) {
                     return isAscending ? valA - valB : valB - valA;
                 } else {
-                    return isAscending 
-                        ? valA.localeCompare(valB, undefined, { sensitivity: 'base' }) 
+                    return isAscending
+                        ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
                         : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
                 }
             });
@@ -1014,30 +1063,101 @@
             }
         }
 
-        // Word explanation with Google Gemini API
         async function showExplanation(word) {
             currentWord = word;
+
             const modal = document.getElementById('explanationModal');
             const explanationBody = document.getElementById('explanationBody');
-            
-            document.getElementById('modalWord').textContent = word.toUpperCase();
-            explanationBody.innerHTML = '<div class="loading"><div class="spinner"></div>Loading examples...</div>';
-            
+            const modalWord = document.getElementById('modalWord');
+
+            modalWord.textContent = word.toUpperCase();
+
+            explanationBody.innerHTML =
+                '<div class="loading"><div class="spinner"></div>Loading definitions...</div>';
+
             modal.style.display = 'block';
-            
+
             try {
-                const explanation = await getExamples(word);
-                explanationBody.innerHTML = `<div class="explanation-content">${explanation}</div>`;
+                const response = await fetch(DICTIONARY_URL + word);
+
+                if (!response.ok) {
+                    throw new Error(`Dictionary request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // getDetails returns normal text, not a Promise
+                const details = getDetails(data);
+
+                // Clear loading message
+                explanationBody.innerHTML = '';
+
+                // Use <pre> so line breaks display correctly
+                const pre = document.createElement('pre');
+                pre.style.whiteSpace = 'pre-wrap';
+                pre.style.wordBreak = 'break-word';
+                pre.textContent = details;
+
+                explanationBody.appendChild(pre);
+
             } catch (error) {
-                explanationBody.innerHTML = `
-                    <div class="error-msg">Failed to load examples: ${error.message}</div>
-                `;
+                explanationBody.innerHTML =
+                    `<div class="error-msg">Failed to load definitions: ${error.message}</div>`;
             }
         }
 
-        async function getExamples(word)
-        {
-            return "examples from API";
+        function getDetails(data) {
+            let text = "";
+            text += `Word: ${data.word || "Not available"}\n\n`;
+            for (const entry of data.entries || []) {
+                text += "\nForms:\n";
+                for (const form of entry.forms || []) {
+                    text += `  ${form.word || "Not available"}`;
+                    if (form.tags?.length > 0) {
+                        text += ` (${form.tags.join(", ")})`;
+                    }
+                    text += "\n";
+                }
+
+                for (const sense of entry.senses || []) {
+                    if (sense.synonyms?.length > 0) {
+                        text += `Synonyms: ${sense.synonyms.join(", ")}\n`;
+                    }
+                    if (sense.antonyms?.length > 0) {
+                        text += `Antonyms: ${sense.antonyms.join(", ")}\n`;
+                    }
+                    for (const example of sense.examples || []) {
+                        text += `Example: ${example}\n`;
+                    }
+                    for (const quote of sense.quotes || []) {
+                        text += `Quote: ${quote.text || ""}\n`;
+                        if (quote.reference) {
+                            text += `Reference: ${quote.reference}\n`;
+                        }
+                    }
+
+                    for (const subsense of sense.subsenses || []) {
+                        text += `\nSub-definition: ${subsense.definition || "Not available"}\n`;
+                        if (subsense.synonyms?.length > 0) {
+                            text += `Sub-synonyms: ${subsense.synonyms.join(", ")}\n`;
+                        }
+                        if (subsense.antonyms?.length > 0) {
+                            text += `Sub-antonyms: ${subsense.antonyms.join(", ")}\n`;
+                        }
+                    }
+                }
+
+                if (entry.synonyms?.length > 0) {
+                    text += `\nEntry synonyms: ${entry.synonyms.join(", ")}\n`;
+                }
+
+                if (entry.antonyms?.length > 0) {
+                    text += `Entry antonyms: ${entry.antonyms.join(", ")}\n`;
+                }
+
+                text += "\n-------------------------\n";
+            }
+            return text;
         }
 
         function closeExplanationModal() {
@@ -1050,7 +1170,7 @@
             speechSynthesis.speak(utterance);
         }
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('explanationModal');
             if (event.target == modal) {
                 modal.style.display = 'none';
@@ -1058,4 +1178,5 @@
         }
     </script>
 </body>
+
 </html>
