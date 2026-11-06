@@ -677,8 +677,8 @@
     <div class="description-box">
         <ul>
             <li>The most used 16282 English words (average for native English speakers is from 15000 to 35000)</li>
-            <li>Swipe/Double tap to remove known word</li>
-            <li>Click/Tap a word to get more details</li>
+            <li>Double click/tap to remove a word</li>
+            <li>Single click/tap a word for more details</li>
             <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
         </ul>
     </div>
@@ -951,7 +951,6 @@
 
                     card.append(topLine, word, description);
                     attachCardActivation(card, entry.word, () => showExplanation(entry.word));
-                    attachSwipeGesture(card, entry.word);
                     fragment.appendChild(card);
                 }
 
