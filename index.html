@@ -231,6 +231,8 @@
 
         .table-container {
             width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
             overflow-x: auto;
             background: var(--bg-secondary);
             box-shadow: 0 1px 3px var(--table-shadow);
@@ -270,6 +272,7 @@
         }
 
         tbody tr {
+            height: 68px;
             touch-action: pan-y;
             transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s;
         }
@@ -357,7 +360,8 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.68);
+            backdrop-filter: blur(3px);
             animation: fadeIn 0.2s;
         }
 
@@ -373,15 +377,16 @@
 
         .modal-content {
             background-color: var(--modal-bg);
-            margin: 5% auto;
-            padding: 20px;
+            margin: 4vh auto;
+            padding: 24px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 4px 6px var(--modal-shadow);
+            border-radius: 6px;
+            width: min(92%, 760px);
+            max-height: 92vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 18px 60px var(--modal-shadow);
             animation: slideDown 0.3s;
             color: var(--text-primary);
         }
@@ -400,24 +405,41 @@
 
         .modal-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--header-bg);
-            padding-bottom: 10px;
+            gap: 14px;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .modal-title {
+            flex: 1;
+            min-width: 0;
         }
 
         .modal-header h2 {
             margin: 0;
             color: var(--title-text);
+            font-size: 1.8em;
+            overflow-wrap: anywhere;
+        }
+
+        .modal-meta {
+            margin-top: 4px;
+            color: var(--text-muted);
+            font-size: 0.9em;
         }
 
         .close-btn {
             color: var(--close-color);
-            font-size: 28px;
-            font-weight: bold;
+            background: transparent;
+            border: 0;
+            font-size: 26px;
+            line-height: 1;
             cursor: pointer;
             transition: color 0.2s;
+            padding: 6px;
         }
 
         .close-btn:hover {
@@ -427,7 +449,6 @@
         .modal-controls {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
@@ -440,8 +461,9 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.2s;
-            flex: 1 1 auto;
-            /* margin-right: auto; */
+            flex: 0 0 auto;
+            min-width: 42px;
+            min-height: 42px;
         }
 
         .btn-speak:hover {
@@ -470,30 +492,81 @@
         }
 
         .explanation-content {
-            line-height: 1.6;
+            line-height: 1.55;
             color: var(--text-secondary);
             font-size: 0.95em;
+            overflow-y: auto;
+            padding: 4px 6px 4px 0;
         }
 
-        .explanation-content h3 {
+        .dictionary-entry {
+            padding: 17px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dictionary-entry:last-child {
+            border-bottom: 0;
+        }
+
+        .entry-heading {
+            margin: 0 0 10px;
             color: var(--header-bg);
-            margin-top: 15px;
-            margin-bottom: 8px;
+            font-size: 1em;
+            font-weight: 700;
+            text-transform: capitalize;
         }
 
-        .explanation-content p {
-            margin: 8px 0;
+        .sense-list,
+        .subsense-list {
+            margin: 0;
+            padding-left: 24px;
         }
 
-        .explanation-content ul,
-        .explanation-content ol {
-            margin: 8px 0;
-            padding-left: 20px;
+        .sense-list > li {
+            padding: 5px 0 9px 3px;
+        }
+
+        .sense-list > li::marker {
+            color: var(--header-bg);
+            font-weight: 700;
+        }
+
+        .sense-definition {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .sense-tags,
+        .related-terms {
+            color: var(--text-muted);
+            font-size: 0.88em;
+        }
+
+        .sense-tags {
+            margin-left: 5px;
+            font-style: italic;
+        }
+
+        .sense-example {
+            margin: 6px 0 0;
+            padding-left: 10px;
+            border-left: 2px solid var(--status-border);
+            color: var(--text-muted);
+            font-size: 0.92em;
+        }
+
+        .subsense-list {
+            margin-top: 6px;
+            color: var(--text-secondary);
+        }
+
+        .related-terms {
+            margin: 6px 0 0;
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 32px 20px;
             color: var(--text-muted);
         }
 
@@ -594,8 +667,18 @@
             }
 
             .modal-content {
-                width: 95%;
-                margin: 20% auto;
+                width: calc(100% - 20px);
+                max-height: 92vh;
+                margin: 4vh auto;
+                padding: 18px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.45em;
+            }
+
+            .modal-header {
+                gap: 9px;
             }
         }
     </style>
@@ -666,15 +749,18 @@
 
     <!-- Explanation Modal -->
     <div id="explanationModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalWord">
             <div class="modal-header">
                 <div class="modal-controls">
-                    <button class="btn-speak" id="speakBtn" onclick="speakWord()">🔊</button>
+                    <button class="btn-speak" id="speakBtn" onclick="speakWord()" aria-label="Speak word" title="Speak word">🔊</button>
                 </div>
-                <h2 id="modalWord"></h2>
-                <span class="close-btn" onclick="closeExplanationModal()">&times;</span>
+                <div class="modal-title">
+                    <h2 id="modalWord"></h2>
+                    <div class="modal-meta" id="modalMeta"></div>
+                </div>
+                <button class="close-btn" onclick="closeExplanationModal()" aria-label="Close definitions" title="Close">&times;</button>
             </div>
-            <div id="explanationBody"></div>
+            <div id="explanationBody" class="explanation-content" aria-live="polite"></div>
         </div>
     </div>
 
@@ -1069,8 +1155,10 @@
             const modal = document.getElementById('explanationModal');
             const explanationBody = document.getElementById('explanationBody');
             const modalWord = document.getElementById('modalWord');
+            const modalMeta = document.getElementById('modalMeta');
 
-            modalWord.textContent = word.toUpperCase();
+            modalWord.textContent = word.toLowerCase();
+            modalMeta.textContent = '';
 
             explanationBody.innerHTML =
                 '<div class="loading"><div class="spinner"></div>Loading definitions...</div>';
@@ -1085,20 +1173,7 @@
                 }
 
                 const data = await response.json();
-
-                // getDetails returns normal text, not a Promise
-                const details = getDetails(data);
-
-                // Clear loading message
-                explanationBody.innerHTML = '';
-
-                // Use <pre> so line breaks display correctly
-                const pre = document.createElement('pre');
-                pre.style.whiteSpace = 'pre-wrap';
-                pre.style.wordBreak = 'break-word';
-                pre.textContent = details;
-
-                explanationBody.appendChild(pre);
+                renderExplanation(data, explanationBody, modalMeta);
 
             } catch (error) {
                 explanationBody.innerHTML =
@@ -1106,58 +1181,81 @@
             }
         }
 
-        function getDetails(data) {
-            let text = "";
-            text += `Word: ${data.word || "Not available"}\n\n`;
-            for (const entry of data.entries || []) {
-                text += "\nForms:\n";
-                for (const form of entry.forms || []) {
-                    text += `  ${form.word || "Not available"}`;
-                    if (form.tags?.length > 0) {
-                        text += ` (${form.tags.join(", ")})`;
-                    }
-                    text += "\n";
-                }
+        function renderExplanation(data, body, meta) {
+            body.replaceChildren();
+            const entries = data.entries || [];
+            const partsOfSpeech = [...new Set(entries.map(entry => entry.partOfSpeech).filter(Boolean))];
+            const pronunciations = [...new Set(entries.flatMap(entry =>
+                (entry.pronunciations || []).filter(item => item.type === 'ipa').map(item => item.text)
+            ))];
+            meta.textContent = [
+                partsOfSpeech.join(', '),
+                pronunciations.slice(0, 2).join('  ·  ')
+            ].filter(Boolean).join('  ·  ');
 
-                for (const sense of entry.senses || []) {
-                    if (sense.synonyms?.length > 0) {
-                        text += `Synonyms: ${sense.synonyms.join(", ")}\n`;
-                    }
-                    if (sense.antonyms?.length > 0) {
-                        text += `Antonyms: ${sense.antonyms.join(", ")}\n`;
-                    }
-                    for (const example of sense.examples || []) {
-                        text += `Example: ${example}\n`;
-                    }
-                    for (const quote of sense.quotes || []) {
-                        text += `Quote: ${quote.text || ""}\n`;
-                        if (quote.reference) {
-                            text += `Reference: ${quote.reference}\n`;
-                        }
-                    }
-
-                    for (const subsense of sense.subsenses || []) {
-                        text += `\nSub-definition: ${subsense.definition || "Not available"}\n`;
-                        if (subsense.synonyms?.length > 0) {
-                            text += `Sub-synonyms: ${subsense.synonyms.join(", ")}\n`;
-                        }
-                        if (subsense.antonyms?.length > 0) {
-                            text += `Sub-antonyms: ${subsense.antonyms.join(", ")}\n`;
-                        }
-                    }
-                }
-
-                if (entry.synonyms?.length > 0) {
-                    text += `\nEntry synonyms: ${entry.synonyms.join(", ")}\n`;
-                }
-
-                if (entry.antonyms?.length > 0) {
-                    text += `Entry antonyms: ${entry.antonyms.join(", ")}\n`;
-                }
-
-                text += "\n-------------------------\n";
+            if (entries.length === 0) {
+                body.textContent = 'No definitions were found for this word.';
+                return;
             }
-            return text;
+
+            entries.forEach(entry => {
+                const section = document.createElement('section');
+                section.className = 'dictionary-entry';
+
+                const heading = document.createElement('h3');
+                heading.className = 'entry-heading';
+                heading.textContent = entry.partOfSpeech || 'Definition';
+                section.appendChild(heading);
+
+                const senses = document.createElement('ol');
+                senses.className = 'sense-list';
+                (entry.senses || []).forEach(sense => senses.appendChild(createSenseElement(sense)));
+                section.appendChild(senses);
+                body.appendChild(section);
+            });
+        }
+
+        function createSenseElement(sense) {
+            const item = document.createElement('li');
+            const definition = document.createElement('p');
+            definition.className = 'sense-definition';
+            definition.textContent = sense.definition || 'Definition unavailable';
+            item.appendChild(definition);
+
+            if (sense.tags?.length) {
+                const tags = document.createElement('span');
+                tags.className = 'sense-tags';
+                tags.textContent = `(${sense.tags.join(', ')})`;
+                item.appendChild(tags);
+            }
+
+            (sense.examples || []).slice(0, 2).forEach(example => {
+                const exampleElement = document.createElement('blockquote');
+                exampleElement.className = 'sense-example';
+                exampleElement.textContent = example;
+                item.appendChild(exampleElement);
+            });
+
+            [['Synonyms', sense.synonyms], ['Antonyms', sense.antonyms]].forEach(([label, terms]) => {
+                if (!terms?.length) return;
+                const related = document.createElement('p');
+                related.className = 'related-terms';
+                related.textContent = `${label}: ${terms.slice(0, 8).join(', ')}`;
+                item.appendChild(related);
+            });
+
+            if (sense.subsenses?.length) {
+                const subsenses = document.createElement('ul');
+                subsenses.className = 'subsense-list';
+                sense.subsenses.forEach(subsense => {
+                    const subitem = document.createElement('li');
+                    subitem.textContent = subsense.definition || 'Definition unavailable';
+                    subsenses.appendChild(subitem);
+                });
+                item.appendChild(subsenses);
+            }
+
+            return item;
         }
 
         function closeExplanationModal() {
