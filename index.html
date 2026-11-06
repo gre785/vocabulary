@@ -332,24 +332,6 @@
             margin-left: 3px;
         }
 
-        .remove-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .remove-btn:hover {
-            background-color: #c82333;
-        }
-
         /* Modal styles */
         .modal {
             display: none;
@@ -948,13 +930,7 @@
                     rank.className = 'card-rank';
                     rank.textContent = `#${entry.rank}`;
 
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.type = 'button';
-                    removeBtn.textContent = 'X';
-                    removeBtn.setAttribute('aria-label', `Remove ${entry.word}`);
-                    removeBtn.onclick = () => removeWord(entry.word);
-                    topLine.append(rank, removeBtn);
+                    topLine.appendChild(rank);
 
                     const word = document.createElement('button');
                     word.className = 'card-word';
@@ -1003,12 +979,6 @@
 
             card.addEventListener('click', event => {
                 const button = event.target.closest('button');
-                if (button?.classList.contains('remove-btn')) {
-                    clearTimeout(pendingDetails);
-                    pendingDetails = null;
-                    lastActivation = 0;
-                    return;
-                }
                 if (button && !button.classList.contains('card-word')) return;
 
                 const now = Date.now();
