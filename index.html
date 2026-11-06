@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png+xml" href="favicon.png">
-    <title>Top English DailyVocabulary</title>
+    <title>Top English Daily Vocabulary</title>
     <style>
         * {
             box-sizing: border-box;
@@ -693,14 +693,20 @@
         <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
             Removed (<span id="removedCount">0</span>)
         </button>
+        <button class="btn btn-reset" onclick="resetRemovedWords()">
+            Restore
+        </button>
         <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
             Show Easy
         </button>
         <button id="toggleDescBtn" class="btn btn-toggle-desc" onclick="toggleDescriptionColumn()">
-            Hide Description
+            Description
         </button>
-        <button class="btn btn-reset" onclick="resetRemovedWords()">
-            Restore
+        <button id="sortRankBtn" class="btn btn-reset" onclick="sortTable(0, true)">
+            1-16000
+        </button>
+        <button id="sortAtoZBtn" class="btn btn-reset" onclick="sortTable(1, false)">
+            A - Z
         </button>
     </div>
 
@@ -711,10 +717,6 @@
             onkeyup="filterTable()">
     </div>
 
-    <div class="sort-controls" aria-label="Sort vocabulary">
-        <button class="sort-button" type="button" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span></button>
-        <button class="sort-button" type="button" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span></button>
-    </div>
     <div class="card-grid" id="vocabCards" aria-live="polite"></div>
 
     <!-- Explanation Modal -->
@@ -762,6 +764,7 @@
             initializeDarkMode();
             updateToggleButton();
             updateToggleDescButton();
+            updateSortByRankButton();
             await loadRemovedCSV();
             await loadVocabularyCSV();
         }
@@ -1127,14 +1130,40 @@
             }
         }
 
+        function updateSortByRankButton() {
+            const toggleBtn = document.getElementById('sortRankBtn');
+            if (sortDirections[0]) {
+                toggleBtn.textContent = '1-16000';
+                toggleBtn.style.backgroundColor = '#dc3545';
+            } else {
+                toggleBtn.textContent = '16000-1';
+                toggleBtn.style.backgroundColor = '#0d6efd';
+            }
+            const toggleBtn2 = document.getElementById('sortAtoZBtn');
+            toggleBtn2.style.backgroundColor = '';
+        }
+
+        function updateSortByAtoZButton() {
+            const toggleBtn = document.getElementById('sortAtoZBtn');
+            if (sortDirections[1]) {
+                toggleBtn.textContent = 'A - Z';
+                toggleBtn.style.backgroundColor = '#d63384';
+            } else {
+                toggleBtn.textContent = 'Z - A';
+                toggleBtn.style.backgroundColor = '#198754';
+            }
+            const toggleBtn2 = document.getElementById('sortRankBtn');
+            toggleBtn2.style.backgroundColor = '';
+        }
+
         function updateToggleDescButton() {
             const toggleDescBtn = document.getElementById('toggleDescBtn');
 
             if (hideDescription) {
-                toggleDescBtn.textContent = 'Show Description';
+                toggleDescBtn.textContent = 'Description';
                 toggleDescBtn.style.backgroundColor = '#6c757d';
             } else {
-                toggleDescBtn.textContent = 'Hide Description';
+                toggleDescBtn.textContent = 'Description';
                 toggleDescBtn.style.backgroundColor = '#9c27b0';
             }
         }
@@ -1147,8 +1176,10 @@
                 const valB = columnIndex === 0 ? b.rank : b.word;
 
                 if (isNumeric) {
+                    updateSortByRankButton();
                     return isAscending ? valA - valB : valB - valA;
                 } else {
+                    updateSortByAtoZButton();
                     return isAscending
                         ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
                         : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
