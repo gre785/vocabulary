@@ -961,7 +961,6 @@
                     word.type = 'button';
                     word.textContent = entry.word;
                     word.setAttribute('aria-label', `Open definitions for ${entry.word}`);
-                    word.onclick = () => showExplanation(entry.word);
 
                     const description = document.createElement('p');
                     description.className = 'card-description';
@@ -971,6 +970,7 @@
                     description.textContent = entry.description;
 
                     card.append(topLine, word, description);
+                    attachCardActivation(card, entry.word, () => showExplanation(entry.word));
                     attachSwipeGesture(card, entry.word);
                     fragment.appendChild(card);
                 }
@@ -995,6 +995,38 @@
             }, { rootMargin: '300px' });
 
             appendNextBatch();
+        }
+
+        function attachCardActivation(card, word, openDetails) {
+            let lastActivation = 0;
+            let pendingDetails = null;
+
+            card.addEventListener('click', event => {
+                const button = event.target.closest('button');
+                if (button?.classList.contains('remove-btn')) {
+                    clearTimeout(pendingDetails);
+                    pendingDetails = null;
+                    lastActivation = 0;
+                    return;
+                }
+                if (button && !button.classList.contains('card-word')) return;
+
+                const now = Date.now();
+                if (now - lastActivation < 350) {
+                    event.preventDefault();
+                    clearTimeout(pendingDetails);
+                    removeWord(word);
+                    return;
+                }
+
+                lastActivation = now;
+                if (button?.classList.contains('card-word')) {
+                    pendingDetails = setTimeout(() => {
+                        if (lastActivation === now) openDetails();
+                        pendingDetails = null;
+                    }, 350);
+                }
+            });
         }
 
         function attachSwipeGesture(row, word) {
