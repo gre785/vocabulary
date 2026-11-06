@@ -229,112 +229,102 @@
             color: var(--text-muted);
         }
 
-        .table-container {
-            width: 100%;
-            max-width: 760px;
-            margin: 0 auto;
-            overflow-x: auto;
-            background: var(--bg-secondary);
-            box-shadow: 0 1px 3px var(--table-shadow);
+        .sort-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            max-width: 1040px;
+            margin: 0 auto 10px;
+        }
+
+        .sort-button {
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: auto;
-        }
-
-        th,
-        td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: top;
-            word-wrap: break-word;
-            color: var(--text-primary);
-        }
-
-        th {
-            background-color: var(--header-bg);
-            color: white;
-            font-weight: bold;
-        }
-
-        th.sortable {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            font-weight: 700;
             cursor: pointer;
-            user-select: none;
-            transition: background-color 0.2s;
         }
 
-        th.sortable:hover {
-            background-color: var(--header-hover);
+        .sort-button:hover {
+            background: var(--hover-bg);
         }
 
-        tbody tr {
-            height: 68px;
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 235px), 1fr));
+            gap: 14px;
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        .word-card {
+            min-width: 0;
+            min-height: 168px;
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--header-bg);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            box-shadow: 0 2px 6px var(--table-shadow);
             touch-action: pan-y;
-            transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, box-shadow 0.2s, background-color 0.2s;
         }
 
-        tbody tr:nth-child(odd) {
-            background-color: var(--bg-secondary);
+        .word-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px var(--table-shadow);
         }
 
-        tbody tr:nth-child(even) {
-            background-color: var(--bg-tertiary);
+        .card-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 30px;
         }
 
-        tbody tr:hover {
-            background-color: var(--hover-bg);
+        .card-rank {
+            color: var(--rank-text);
+            font-size: 0.78em;
+            font-weight: 700;
         }
 
-        .load-more-row,
-        .load-more-row td {
-            height: 1px;
+        .card-word {
+            margin: 10px 0 6px;
             padding: 0;
             border: 0;
-        }
-
-        .rank-col {
-            width: 50px;
-            font-weight: bold;
-            color: var(--rank-text);
-            text-align: center;
-        }
-
-        .word-col {
-            min-width: 110px;
-            font-weight: bold;
+            background: transparent;
             color: var(--title-text);
-            font-size: 1em;
+            font-size: 1.35em;
+            font-weight: 700;
+            text-align: left;
+            overflow-wrap: anywhere;
             cursor: pointer;
-            transition: color 0.2s;
         }
 
-        .word-col:hover {
+        .card-word:hover {
             color: var(--word-hover);
-            text-decoration: underline;
         }
 
-        .desc-col {
-            line-height: 1.4;
-            font-size: 0.95em;
+        .card-description {
+            margin: 0;
             color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.45;
         }
 
-        .desc-col.hidden {
+        .card-description.hidden {
             display: none;
         }
 
-        .action-col {
-            width: 45px;
-            text-align: center;
-        }
-
-        th:first-child,
-        th:last-child {
-            text-align: center;
+        .load-more-sentinel {
+            grid-column: 1 / -1;
+            height: 1px;
         }
 
         .sort-icon {
@@ -346,8 +336,10 @@
             background-color: #dc3545;
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 3px;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 0.85em;
             font-weight: bold;
@@ -736,23 +728,11 @@
             onkeyup="filterTable()">
     </div>
 
-    <div class="table-container">
-        <table id="vocabTable">
-            <thead>
-                <tr>
-                    <th class="sortable" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span>
-                    </th>
-                    <th class="sortable" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span>
-                    </th>
-                    <th id="descHeader">Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Parsed entries render here -->
-            </tbody>
-        </table>
+    <div class="sort-controls" aria-label="Sort vocabulary">
+        <button class="sort-button" type="button" onclick="sortTable(0, true)">Rank <span class="sort-icon" id="sort-0"></span></button>
+        <button class="sort-button" type="button" onclick="sortTable(1, false)">Word <span class="sort-icon" id="sort-1"></span></button>
     </div>
+    <div class="card-grid" id="vocabCards" aria-live="polite"></div>
 
     <!-- Explanation Modal -->
     <div id="explanationModal" class="modal">
@@ -942,15 +922,15 @@
         }
 
         function renderTable() {
-            const tbody = document.querySelector('#vocabTable tbody');
+            const cardGrid = document.getElementById('vocabCards');
             if (tableObserver) tableObserver.disconnect();
-            tbody.replaceChildren();
+            cardGrid.replaceChildren();
 
             const displayEntries = getDisplayEntries();
             let nextIndex = 0;
 
             function appendNextBatch() {
-                const oldSentinel = tbody.querySelector('.load-more-row');
+                const oldSentinel = cardGrid.querySelector('.load-more-sentinel');
                 if (oldSentinel) oldSentinel.remove();
 
                 const fragment = document.createDocumentFragment();
@@ -958,47 +938,50 @@
 
                 while (nextIndex < batchEnd) {
                     const entry = displayEntries[nextIndex++];
-                    const row = document.createElement('tr');
+                    const card = document.createElement('article');
+                    card.className = 'word-card';
 
-                    const rankTd = document.createElement('td');
-                    rankTd.className = 'rank-col';
-                    rankTd.textContent = entry.rank;
+                    const topLine = document.createElement('div');
+                    topLine.className = 'card-topline';
 
-                    const wordTd = document.createElement('td');
-                    wordTd.className = 'word-col';
-                    wordTd.textContent = entry.word;
-                    wordTd.onclick = () => showExplanation(entry.word);
-
-                    const descTd = document.createElement('td');
-                    descTd.className = 'desc-col';
-                    if (hideDescription) {
-                        descTd.classList.add('hidden');
-                    }
-                    descTd.textContent = entry.description;
-
-                    const actionTd = document.createElement('td');
-                    actionTd.className = 'action-col';
+                    const rank = document.createElement('span');
+                    rank.className = 'card-rank';
+                    rank.textContent = `#${entry.rank}`;
 
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-btn';
+                    removeBtn.type = 'button';
                     removeBtn.textContent = 'X';
+                    removeBtn.setAttribute('aria-label', `Remove ${entry.word}`);
                     removeBtn.onclick = () => removeWord(entry.word);
+                    topLine.append(rank, removeBtn);
 
-                    actionTd.appendChild(removeBtn);
-                    row.append(rankTd, wordTd, descTd, actionTd);
-                    attachSwipeGesture(row, entry.word);
-                    fragment.appendChild(row);
+                    const word = document.createElement('button');
+                    word.className = 'card-word';
+                    word.type = 'button';
+                    word.textContent = entry.word;
+                    word.setAttribute('aria-label', `Open definitions for ${entry.word}`);
+                    word.onclick = () => showExplanation(entry.word);
+
+                    const description = document.createElement('p');
+                    description.className = 'card-description';
+                    if (hideDescription) {
+                        description.classList.add('hidden');
+                    }
+                    description.textContent = entry.description;
+
+                    card.append(topLine, word, description);
+                    attachSwipeGesture(card, entry.word);
+                    fragment.appendChild(card);
                 }
 
-                tbody.appendChild(fragment);
+                cardGrid.appendChild(fragment);
 
                 if (nextIndex < displayEntries.length) {
-                    const sentinel = document.createElement('tr');
-                    sentinel.className = 'load-more-row';
+                    const sentinel = document.createElement('div');
+                    sentinel.className = 'load-more-sentinel';
                     sentinel.setAttribute('aria-hidden', 'true');
-                    sentinel.appendChild(document.createElement('td'));
-                    sentinel.firstElementChild.colSpan = 4;
-                    tbody.appendChild(sentinel);
+                    cardGrid.appendChild(sentinel);
                     tableObserver.observe(sentinel);
                 } else {
                     tableObserver.disconnect();
@@ -1143,16 +1126,13 @@
 
         function updateToggleDescButton() {
             const toggleDescBtn = document.getElementById('toggleDescBtn');
-            const descHeader = document.getElementById('descHeader');
 
             if (hideDescription) {
                 toggleDescBtn.textContent = 'Show Description';
                 toggleDescBtn.style.backgroundColor = '#6c757d';
-                descHeader.classList.add('hidden');
             } else {
                 toggleDescBtn.textContent = 'Hide Description';
                 toggleDescBtn.style.backgroundColor = '#9c27b0';
-                descHeader.classList.remove('hidden');
             }
         }
 
