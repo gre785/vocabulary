@@ -289,6 +289,13 @@
             background-color: var(--hover-bg);
         }
 
+        .load-more-row,
+        .load-more-row td {
+            height: 1px;
+            padding: 0;
+            border: 0;
+        }
+
         .rank-col {
             width: 50px;
             font-weight: bold;
@@ -769,6 +776,7 @@
         const REMOVED_REMOTE_URL = 'https://raw.githubusercontent.com/gre785/vocabulary/main/removed.csv';
         const DICTIONARY_URL = 'https://freedictionaryapi.com/api/v1/entries/en/';
         const HIDE_TOP_3000_THRESHOLD = 3000;
+        const TABLE_BATCH_SIZE = 100;
 
         let sortDirections = [true, true];
         let remainingEntries = [];
@@ -777,6 +785,7 @@
         let hideDescription = JSON.parse(localStorage.getItem('vocab_hide_description') || 'true');
         let currentWord = '';
         let searchQuery = '';
+        let tableObserver = null;
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
@@ -934,48 +943,75 @@
 
         function renderTable() {
             const tbody = document.querySelector('#vocabTable tbody');
-            tbody.innerHTML = '';
+            if (tableObserver) tableObserver.disconnect();
+            tbody.replaceChildren();
 
             const displayEntries = getDisplayEntries();
+            let nextIndex = 0;
 
-            displayEntries.forEach((entry, displayIndex) => {
-                const row = document.createElement('tr');
+            function appendNextBatch() {
+                const oldSentinel = tbody.querySelector('.load-more-row');
+                if (oldSentinel) oldSentinel.remove();
 
-                const rankTd = document.createElement('td');
-                rankTd.className = 'rank-col';
-                rankTd.textContent = entry.rank;
+                const fragment = document.createDocumentFragment();
+                const batchEnd = Math.min(nextIndex + TABLE_BATCH_SIZE, displayEntries.length);
 
-                const wordTd = document.createElement('td');
-                wordTd.className = 'word-col';
-                wordTd.textContent = entry.word;
-                wordTd.onclick = () => showExplanation(entry.word);
+                while (nextIndex < batchEnd) {
+                    const entry = displayEntries[nextIndex++];
+                    const row = document.createElement('tr');
 
-                const descTd = document.createElement('td');
-                descTd.className = 'desc-col';
-                if (hideDescription) {
-                    descTd.classList.add('hidden');
+                    const rankTd = document.createElement('td');
+                    rankTd.className = 'rank-col';
+                    rankTd.textContent = entry.rank;
+
+                    const wordTd = document.createElement('td');
+                    wordTd.className = 'word-col';
+                    wordTd.textContent = entry.word;
+                    wordTd.onclick = () => showExplanation(entry.word);
+
+                    const descTd = document.createElement('td');
+                    descTd.className = 'desc-col';
+                    if (hideDescription) {
+                        descTd.classList.add('hidden');
+                    }
+                    descTd.textContent = entry.description;
+
+                    const actionTd = document.createElement('td');
+                    actionTd.className = 'action-col';
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.textContent = 'X';
+                    removeBtn.onclick = () => removeWord(entry.word);
+
+                    actionTd.appendChild(removeBtn);
+                    row.append(rankTd, wordTd, descTd, actionTd);
+                    attachSwipeGesture(row, entry.word);
+                    fragment.appendChild(row);
                 }
-                descTd.textContent = entry.description;
 
-                const actionTd = document.createElement('td');
-                actionTd.className = 'action-col';
+                tbody.appendChild(fragment);
 
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
-                removeBtn.textContent = 'X';
-                removeBtn.onclick = () => removeWord(entry.word);
+                if (nextIndex < displayEntries.length) {
+                    const sentinel = document.createElement('tr');
+                    sentinel.className = 'load-more-row';
+                    sentinel.setAttribute('aria-hidden', 'true');
+                    sentinel.appendChild(document.createElement('td'));
+                    sentinel.firstElementChild.colSpan = 4;
+                    tbody.appendChild(sentinel);
+                    tableObserver.observe(sentinel);
+                } else {
+                    tableObserver.disconnect();
+                }
+            }
 
-                actionTd.appendChild(removeBtn);
+            tableObserver = new IntersectionObserver(entries => {
+                if (entries.some(entry => entry.isIntersecting)) {
+                    appendNextBatch();
+                }
+            }, { rootMargin: '300px' });
 
-                row.appendChild(rankTd);
-                row.appendChild(wordTd);
-                row.appendChild(descTd);
-                row.appendChild(actionTd);
-
-                attachSwipeGesture(row, entry.word);
-
-                tbody.appendChild(row);
-            });
+            appendNextBatch();
         }
 
         function attachSwipeGesture(row, word) {
