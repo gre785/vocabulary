@@ -504,11 +504,11 @@
             padding-left: 24px;
         }
 
-        .sense-list > li {
+        .sense-list>li {
             padding: 5px 0 9px 3px;
         }
 
-        .sense-list > li::marker {
+        .sense-list>li::marker {
             color: var(--header-bg);
             font-weight: 700;
         }
@@ -677,7 +677,7 @@
     <div class="description-box">
         <ul>
             <li>The most used 16282 English words (average for native English speakers is from 15000 to 35000)</li>
-            <li>Double click/tap to remove a word</li>
+            <li>Double click/tap a word to remove</li>
             <li>Single click/tap a word for more details</li>
             <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
         </ul>
@@ -703,7 +703,7 @@
             Description
         </button>
         <button id="sortRankBtn" class="btn btn-reset" onclick="sortTable(0, true)">
-            1-16000
+            1-16282
         </button>
         <button id="sortAtoZBtn" class="btn btn-reset" onclick="sortTable(1, false)">
             A - Z
@@ -724,13 +724,15 @@
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalWord">
             <div class="modal-header">
                 <div class="modal-controls">
-                    <button class="btn-speak" id="speakBtn" onclick="speakWord()" aria-label="Speak word" title="Speak word">🔊</button>
+                    <button class="btn-speak" id="speakBtn" onclick="speakWord()" aria-label="Speak word"
+                        title="Speak word">🔊</button>
                 </div>
                 <div class="modal-title">
                     <h2 id="modalWord"></h2>
                     <div class="modal-meta" id="modalMeta"></div>
                 </div>
-                <button class="close-btn" onclick="closeExplanationModal()" aria-label="Close definitions" title="Close">&times;</button>
+                <button class="close-btn" onclick="closeExplanationModal()" aria-label="Close definitions"
+                    title="Close">&times;</button>
             </div>
             <div id="explanationBody" class="explanation-content" aria-live="polite"></div>
         </div>
@@ -1131,19 +1133,21 @@
 
         function updateSortByRankButton() {
             const toggleBtn = document.getElementById('sortRankBtn');
+
             if (sortDirections[0]) {
-                toggleBtn.textContent = '1-16000';
+                toggleBtn.textContent = '1-16282';
                 toggleBtn.style.backgroundColor = '#dc3545';
             } else {
-                toggleBtn.textContent = '16000-1';
+                toggleBtn.textContent = '16282-1';
                 toggleBtn.style.backgroundColor = '#0d6efd';
             }
-            const toggleBtn2 = document.getElementById('sortAtoZBtn');
-            toggleBtn2.style.backgroundColor = '';
+
+            document.getElementById('sortAtoZBtn').style.backgroundColor = '';
         }
 
         function updateSortByAtoZButton() {
             const toggleBtn = document.getElementById('sortAtoZBtn');
+
             if (sortDirections[1]) {
                 toggleBtn.textContent = 'A - Z';
                 toggleBtn.style.backgroundColor = '#d63384';
@@ -1151,8 +1155,8 @@
                 toggleBtn.textContent = 'Z - A';
                 toggleBtn.style.backgroundColor = '#198754';
             }
-            const toggleBtn2 = document.getElementById('sortRankBtn');
-            toggleBtn2.style.backgroundColor = '';
+
+            document.getElementById('sortRankBtn').style.backgroundColor = '';
         }
 
         function updateToggleDescButton() {
@@ -1168,6 +1172,9 @@
         }
 
         function sortTable(columnIndex, isNumeric = false) {
+            // First click reverses the currently displayed ordering.
+            sortDirections[columnIndex] = !sortDirections[columnIndex];
+
             const isAscending = sortDirections[columnIndex];
 
             remainingEntries.sort((a, b) => {
@@ -1175,27 +1182,21 @@
                 const valB = columnIndex === 0 ? b.rank : b.word;
 
                 if (isNumeric) {
-                    updateSortByRankButton();
                     return isAscending ? valA - valB : valB - valA;
-                } else {
-                    updateSortByAtoZButton();
-                    return isAscending
-                        ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
-                        : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
                 }
+
+                return isAscending
+                    ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
+                    : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
             });
 
-            sortDirections[columnIndex] = !isAscending;
-            renderTable();
-
-            for (let i = 0; i < 2; i++) {
-                const icon = document.getElementById(`sort-${i}`);
-                if (i === columnIndex) {
-                    icon.textContent = isAscending ? " ▲" : " ▼";
-                } else {
-                    icon.textContent = "";
-                }
+            if (columnIndex === 0) {
+                updateSortByRankButton();
+            } else {
+                updateSortByAtoZButton();
             }
+
+            renderTable();
         }
 
         async function showExplanation(word) {
