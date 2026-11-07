@@ -117,16 +117,17 @@
         }
 
         .controls {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
         }
 
         .btn {
-            flex: 1 1 130px;
-            min-width: 130px;
+            width: 100%;
+            min-width: 0;
             height: 42px;
-            padding: 8px 12px;
+            padding: 8px 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -634,6 +635,7 @@
 
             .controls {
                 width: 100%;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             th,
@@ -706,6 +708,9 @@
         <button id="sortAtoZBtn" class="btn btn-reset" onclick="sortTable(1, false)">
             A - Z
         </button>
+        <button id="limit100Btn" class="btn btn-reset" onclick="toggleLimit100()" aria-pressed="false">
+            Show 100
+        </button>
     </div>
 
     <div id="status">Checking for local files...</div>
@@ -752,6 +757,7 @@
         let removedEntries = JSON.parse(localStorage.getItem('vocab_removed_entries') || '[]');
         let hideTop3000 = JSON.parse(localStorage.getItem('vocab_hide_top_3000') || 'true');
         let hideDescription = JSON.parse(localStorage.getItem('vocab_hide_description') || 'true');
+        let limitWordsTo100 = JSON.parse(localStorage.getItem('vocab_limit_100') || 'false');
         let currentWord = '';
         let searchQuery = '';
         let tableObserver = null;
@@ -769,6 +775,7 @@
             updateToggleButton();
             updateToggleDescButton();
             updateSortByRankButton();
+            updateLimit100Button();
             await loadRemovedCSV();
             await loadVocabularyCSV();
         }
@@ -901,6 +908,10 @@
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 entries = entries.filter(entry => entry.word.toLowerCase().startsWith(query));
+            }
+
+            if (limitWordsTo100) {
+                entries = entries.slice(0, 100);
             }
 
             return entries;
@@ -1122,6 +1133,13 @@
             renderTable();
         }
 
+        function toggleLimit100() {
+            limitWordsTo100 = !limitWordsTo100;
+            localStorage.setItem('vocab_limit_100', JSON.stringify(limitWordsTo100));
+            updateLimit100Button();
+            renderTable();
+        }
+
         function updateToggleButton() {
             const toggleBtn = document.getElementById('toggleBtn');
             if (hideTop3000) {
@@ -1171,6 +1189,13 @@
                 toggleDescBtn.textContent = 'Description';
                 toggleDescBtn.style.backgroundColor = '#9c27b0';
             }
+        }
+
+        function updateLimit100Button() {
+            const limit100Btn = document.getElementById('limit100Btn');
+            limit100Btn.textContent = limitWordsTo100 ? 'Show All' : 'Show 100';
+            limit100Btn.setAttribute('aria-pressed', limitWordsTo100);
+            limit100Btn.style.backgroundColor = limitWordsTo100 ? '#198754' : '';
         }
 
         function sortTable(columnIndex, isNumeric = false) {
