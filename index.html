@@ -690,20 +690,20 @@
         <button class="btn btn-upload" onclick="document.getElementById('uploadCsvInput').click()">
             Upload
         </button>
-        <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
-            Removed (<span id="removedCount">0</span>)
-        </button>
         <button class="btn btn-reset" onclick="resetRemovedWords()">
             Restore
+        </button>
+        <button id="sortRankBtn" class="btn btn-reset" onclick="sortTable(0, true)">
+            1-16282
         </button>
         <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
             Show Easy
         </button>
+        <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
+            Removed (<span id="removedCount">0</span>)
+        </button>
         <button id="toggleDescBtn" class="btn btn-toggle-desc" onclick="toggleDescriptionColumn()">
             Description
-        </button>
-        <button id="sortRankBtn" class="btn btn-reset" onclick="sortTable(0, true)">
-            1-16282
         </button>
         <button id="sortAtoZBtn" class="btn btn-reset" onclick="sortTable(1, false)">
             A - Z
