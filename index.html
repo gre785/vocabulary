@@ -761,6 +761,7 @@
         let currentWord = '';
         let searchQuery = '';
         let tableObserver = null;
+        let limitedWordSnapshot = null;
 
         window.addEventListener('DOMContentLoaded', initializeData);
 
@@ -898,7 +899,7 @@
             renderTable();
         }
 
-        function getDisplayEntries() {
+        function getDisplayEntries(refreshLimitedSet = true) {
             let entries = remainingEntries;
 
             if (hideTop3000) {
@@ -910,8 +911,13 @@
                 entries = entries.filter(entry => entry.word.toLowerCase().startsWith(query));
             }
 
-            if (limitWordsTo100) {
-                entries = entries.slice(0, 100);
+            if (!limitWordsTo100) {
+                limitedWordSnapshot = null;
+            } else {
+                if (refreshLimitedSet || !limitedWordSnapshot) {
+                    limitedWordSnapshot = new Set(entries.slice(0, 100).map(entry => entry.word));
+                }
+                entries = entries.filter(entry => limitedWordSnapshot.has(entry.word));
             }
 
             return entries;
@@ -922,12 +928,12 @@
             renderTable();
         }
 
-        function renderTable() {
+        function renderTable(refreshLimitedSet = true) {
             const cardGrid = document.getElementById('vocabCards');
             if (tableObserver) tableObserver.disconnect();
             cardGrid.replaceChildren();
 
-            const displayEntries = getDisplayEntries();
+            const displayEntries = getDisplayEntries(refreshLimitedSet);
             let nextIndex = 0;
 
             function appendNextBatch() {
@@ -1065,7 +1071,7 @@
             localStorage.setItem('vocab_removed_entries', JSON.stringify(removedEntries));
 
             updateRemovedCount();
-            renderTable();
+            renderTable(false);
         }
 
         function handleUploadRemovedCSV(event) {
