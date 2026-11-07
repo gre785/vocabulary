@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png+xml" href="favicon.png">
-    <title>Top English DailyVocabulary</title>
+    <title>Top English Daily Vocabulary</title>
     <style>
         * {
             box-sizing: border-box;
@@ -123,16 +123,14 @@
         }
 
         .btn {
-            border: none;
+            flex: 1 1 130px;
+            min-width: 130px;
+            height: 42px;
             padding: 8px 12px;
-            font-size: 0.85em;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            flex: 1 1 auto;
-            text-align: center;
-            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
         }
 
         .btn-upload {
@@ -504,11 +502,11 @@
             padding-left: 24px;
         }
 
-        .sense-list > li {
+        .sense-list>li {
             padding: 5px 0 9px 3px;
         }
 
-        .sense-list > li::marker {
+        .sense-list>li::marker {
             color: var(--header-bg);
             font-weight: 700;
         }
@@ -676,9 +674,9 @@
 
     <div class="description-box">
         <ul>
-            <li>The most used 16000+ English words (average for native English speakers is from 15000 to 35000)</li>
-            <li>Swipe or double tap to remove known word</li>
-            <li><strong>Click/Tap a word</strong> to get more details</li>
+            <li>The most used 16282 English words (average for native English speakers is from 15000 to 35000)</li>
+            <li>Double click/tap a word to remove</li>
+            <li>Single click/tap a word for more details</li>
             <li>Save (by clicking and download "Removed words")/Upload the list to sync words on different devices</li>
         </ul>
     </div>
@@ -693,14 +691,20 @@
         <button id="downloadBtn" class="btn btn-download" onclick="downloadRemovedCSV()">
             Removed (<span id="removedCount">0</span>)
         </button>
+        <button class="btn btn-reset" onclick="resetRemovedWords()">
+            Restore
+        </button>
         <button id="toggleBtn" class="btn btn-toggle" onclick="toggleHideTop3000()">
             Show Easy
         </button>
         <button id="toggleDescBtn" class="btn btn-toggle-desc" onclick="toggleDescriptionColumn()">
-            Hide Description
+            Description
         </button>
-        <button class="btn btn-reset" onclick="resetRemovedWords()">
-            Restore
+        <button id="sortRankBtn" class="btn btn-reset" onclick="sortTable(0, true)">
+            1-16282
+        </button>
+        <button id="sortAtoZBtn" class="btn btn-reset" onclick="sortTable(1, false)">
+            A - Z
         </button>
     </div>
 
@@ -722,13 +726,15 @@
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalWord">
             <div class="modal-header">
                 <div class="modal-controls">
-                    <button class="btn-speak" id="speakBtn" onclick="speakWord()" aria-label="Speak word" title="Speak word">🔊</button>
+                    <button class="btn-speak" id="speakBtn" onclick="speakWord()" aria-label="Speak word"
+                        title="Speak word">🔊</button>
                 </div>
                 <div class="modal-title">
                     <h2 id="modalWord"></h2>
                     <div class="modal-meta" id="modalMeta"></div>
                 </div>
-                <button class="close-btn" onclick="closeExplanationModal()" aria-label="Close definitions" title="Close">&times;</button>
+                <button class="close-btn" onclick="closeExplanationModal()" aria-label="Close definitions"
+                    title="Close">&times;</button>
             </div>
             <div id="explanationBody" class="explanation-content" aria-live="polite"></div>
         </div>
@@ -762,6 +768,7 @@
             initializeDarkMode();
             updateToggleButton();
             updateToggleDescButton();
+            updateSortByRankButton();
             await loadRemovedCSV();
             await loadVocabularyCSV();
         }
@@ -948,7 +955,6 @@
 
                     card.append(topLine, word, description);
                     attachCardActivation(card, entry.word, () => showExplanation(entry.word));
-                    attachSwipeGesture(card, entry.word);
                     fragment.appendChild(card);
                 }
 
@@ -1127,19 +1133,50 @@
             }
         }
 
+        function updateSortByRankButton() {
+            const toggleBtn = document.getElementById('sortRankBtn');
+
+            if (sortDirections[0]) {
+                toggleBtn.textContent = '1-16282';
+                toggleBtn.style.backgroundColor = '#dc3545';
+            } else {
+                toggleBtn.textContent = '16282-1';
+                toggleBtn.style.backgroundColor = '#0d6efd';
+            }
+
+            document.getElementById('sortAtoZBtn').style.backgroundColor = '';
+        }
+
+        function updateSortByAtoZButton() {
+            const toggleBtn = document.getElementById('sortAtoZBtn');
+
+            if (sortDirections[1]) {
+                toggleBtn.textContent = 'A - Z';
+                toggleBtn.style.backgroundColor = '#d63384';
+            } else {
+                toggleBtn.textContent = 'Z - A';
+                toggleBtn.style.backgroundColor = '#198754';
+            }
+
+            document.getElementById('sortRankBtn').style.backgroundColor = '';
+        }
+
         function updateToggleDescButton() {
             const toggleDescBtn = document.getElementById('toggleDescBtn');
 
             if (hideDescription) {
-                toggleDescBtn.textContent = 'Show Description';
+                toggleDescBtn.textContent = 'Description';
                 toggleDescBtn.style.backgroundColor = '#6c757d';
             } else {
-                toggleDescBtn.textContent = 'Hide Description';
+                toggleDescBtn.textContent = 'Description';
                 toggleDescBtn.style.backgroundColor = '#9c27b0';
             }
         }
 
         function sortTable(columnIndex, isNumeric = false) {
+            // First click reverses the currently displayed ordering.
+            sortDirections[columnIndex] = !sortDirections[columnIndex];
+
             const isAscending = sortDirections[columnIndex];
 
             remainingEntries.sort((a, b) => {
@@ -1148,24 +1185,20 @@
 
                 if (isNumeric) {
                     return isAscending ? valA - valB : valB - valA;
-                } else {
-                    return isAscending
-                        ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
-                        : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
                 }
+
+                return isAscending
+                    ? valA.localeCompare(valB, undefined, { sensitivity: 'base' })
+                    : valB.localeCompare(valA, undefined, { sensitivity: 'base' });
             });
 
-            sortDirections[columnIndex] = !isAscending;
-            renderTable();
-
-            for (let i = 0; i < 2; i++) {
-                const icon = document.getElementById(`sort-${i}`);
-                if (i === columnIndex) {
-                    icon.textContent = isAscending ? " ▲" : " ▼";
-                } else {
-                    icon.textContent = "";
-                }
+            if (columnIndex === 0) {
+                updateSortByRankButton();
+            } else {
+                updateSortByAtoZButton();
             }
+
+            renderTable();
         }
 
         async function showExplanation(word) {
